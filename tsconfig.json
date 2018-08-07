@@ -1,0 +1,24 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "paths": {
+      "ng2-go-top-button/*": ["./node_modules/ng2-go-top-button/*"]
+  },
+  "outDir": "./dist/out-tsc",
+  "experimentalDecorators": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "strictPropertyInitialization": false,
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  }
+}

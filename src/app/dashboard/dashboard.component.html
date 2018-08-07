@@ -1,0 +1,58 @@
+<div class="row">
+  <div class="col-md-12 col-xl-4">
+    <div class="card table-card widget-primary-card">
+      <div class="">
+        <div class="row-table">
+          <div class="col-sm-3 card-block-big">
+            <i class="icofont icofont-check"></i>
+          </div>
+          <div class="col-sm-9">
+            <h4>{{concluded?.length}}</h4>
+            <h6>Avaliações realizadas </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card table-card widget-warning-card">
+      <div class="">
+        <div class="row-table">
+          <div class="col-sm-3 card-block-big">
+            <i class="icofont icofont-info"></i>
+          </div>
+          <div class="col-sm-12">
+            <h4>{{outstanding?.length}}</h4>
+            <h6>Avaliações pendentes</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card table-card widget-danger-card">
+      <div class="">
+        <div class="row-table">
+          <div class="col-sm-3 card-block-big">
+            <i class="icofont icofont-warning"></i>
+          </div>
+          <div class="col-sm-12">
+            <h4>{{late?.length}}</h4>
+            <h6>Avaliações atrasadas</h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="col-lg-8">
+    <div class="card">
+      <label class='form-control'>Saúde dos ambientes</label>
+      <div class="card-header">
+        <button class="btn btn-primary btn-sm">Unidade</button>
+        <button class="btn btn-primary btn-sm">Ano</button>
+        <button class="btn btn-primary btn-sm">Mês</button>
+      </div>
+      <div class="card-block">
+        <div id="morris-extra-area"></div>
+      </div>
+    </div>
+  </div>
+</div>

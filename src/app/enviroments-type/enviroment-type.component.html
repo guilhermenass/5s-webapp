@@ -1,0 +1,71 @@
+<div class="button-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card [title]="!enviromentType.id ? 'Cadastro de tipos de ambiente' : 'Edição de tipos de ambiente'">
+        <form #enviromentTypeForm="ngForm" (submit)="save(enviromentType); this.enviromentTypeForm.reset()">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Nome </label>
+            <div class="col-sm-10">
+              <input type="text" [(ngModel)]="enviromentType.name" required name="name" #name="ngModel" class="form-control">
+              <span *ngIf="name.invalid && (name.dirty || name.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Descrição</label>
+            <div class="col-sm-10">
+              <textarea [(ngModel)]="enviromentType.description" name="description" class="textarea-width-100 form-control"
+                name="comment"></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary pull-right no-margin-right" type="submit" [disabled]="!enviromentTypeForm.valid">Salvar</button>
+        </form>
+      </app-card>
+
+      <ng-template #noContent>
+          <p class="no-content">Nenhum registro para mostrar.</p>
+      </ng-template>
+
+      <app-card [title]="'Listagem de tipos de ambiente'">
+          <div class="row">
+            <h4 class="col-sm-2">Pesquisar:  </h4>
+            <input class="form-control col-sm-10" #EnvironmentTypeSearch placeholder="Pesquise por um Tipo de ambiente" (keyup)="findEnvironmentTypes(EnvironmentTypeSearch.value)" >
+          </div>
+        <div class="table-responsive">
+          <table *ngIf="enviromentTypes?.length > 0; else noContent" class="table table--clean">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let enviromentType of enviromentTypesFiltered">
+                <td>{{enviromentType.name}}</td>
+                <td>{{enviromentType.description}}</td>
+                <td>
+                  <span class="inline-block">
+                    <button class="btn btn-info btn-icon no-margin" (click)="update(enviromentType)">
+                      <i class="icofont icofont-edit"></i>
+                    </button>
+                  </span>
+                  <span class="inline-block margin-left-10">
+                    <button class="btn btn-danger btn-icon no-margin" (click)="getModalAnswer(enviromentType.id)">
+                      <i class="icofont icofont-trash"></i>
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="noContents" *ngIf="lengthEnvironmentTypePagination > 10">
+            <pagination [totalItems]="lengthEnvironmentTypePagination" (pageChanged)="pageChanged($event)"></pagination>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

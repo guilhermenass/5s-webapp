@@ -1,0 +1,124 @@
+<div class="button-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card [title]="!enviroment.id ? 'Cadastro de ambientes' : 'Edição de ambientes'">
+        <form #enviromentForm="ngForm" (submit)="save(enviroment); this.enviromentForm.reset()">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Nome </label>
+            <div class="col-sm-10">
+              <input type="text" [(ngModel)]="enviroment.name" required name="name" #name="ngModel" class="form-control">
+              <span *ngIf="name.invalid && (name.dirty || name.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Unidade</label>
+            <div class="col-sm-10">
+              <select [(ngModel)]="enviroment.units_id" #enviromentUnit="ngModel" required name="enviromentUnit" class="form-control">
+                  <option disabled *ngIf="units?.length == 0">Nenhuma unidade cadastrada.</option>
+                <option *ngFor="let unit of units" [value]="unit.id">
+                  {{ unit.name }}                                                                                                                                                                                                                                                                                                     
+                </option> 
+              </select>
+              <span *ngIf="enviromentUnit.invalid && (enviromentUnit.dirty || enviromentUnit.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>  
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Bloco </label>
+            <div class="col-sm-10">
+              <input type="text" [(ngModel)]="enviroment.block" placeholder="Exemplo: Bloco C" name="block" #block="ngModel" class="form-control"> 
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Responsável</label>
+            <div class="col-sm-10">
+              <select [(ngModel)]="enviroment.users_id" #enviromentResponsible="ngModel" required name="enviromentResponsible" class="form-control">
+                <option *ngFor="let user of users" [value]="user.id">
+                  {{ user.name }}                                                                                                                                                                                                                                                                                                     
+                </option> 
+              </select>
+              <span *ngIf="enviromentResponsible.invalid && (enviromentResponsible.dirty || enviromentResponsible.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>  
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Tipo de ambiente</label>
+            <div class="col-sm-10">
+              <select [(ngModel)]="enviroment.enviroment_types_id" #enviromentType="ngModel" required name="enviromentType" class="form-control">
+                <option disabled *ngIf="enviromentTypes?.length == 0">Nenhum tipo de ambiente cadastrado.</option>
+                <option *ngFor="let enviromentType of enviromentTypes" [value]="enviromentType.id">
+                  {{ enviromentType.name }}                                                                                                                                                                                                                                                                                                     
+                </option> 
+              </select>
+              <span *ngIf="enviromentType.invalid && (enviromentType.dirty || enviromentType.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>  
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Descrição</label>
+            <div class="col-sm-10">
+              <textarea [(ngModel)]="enviroment.description" name="description" class="textarea-width-100 form-control"
+               name="comment"></textarea>
+            </div>
+          </div>
+  
+          <button class="btn btn-primary pull-right no-margin-right" type="submit" [disabled]="!enviromentForm.valid">Salvar</button>
+        </form>
+      </app-card>
+
+      <ng-template #noEnviroments>
+        <p class="no-content">Nenhum registro para mostrar.</p>
+      </ng-template>
+
+      <app-card [title]="'Listagem de ambientes'">
+        <div class="row">
+          <h4 class="col-sm-2">Pesquisar:  </h4>
+          <input class="form-control col-sm-10" #EnvironmentSearch placeholder="Pesquise por um Ambiente" (keyup)="findEnvironments(EnvironmentSearch.value)" >
+        </div>
+        <div class="table-responsive">
+          <table *ngIf="enviroments?.length > 0; else noEnviroments"  class="table table--clean">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Unidade</th>
+                <th>Bloco</th>
+                <th>Responsável</th>
+                <th>Tipo de ambiente</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let enviroment of enviromentFiltered">
+                <td>{{enviroment.name}}</td>
+                <td>{{enviroment.Unit.name}}</td>
+                <td>{{enviroment.block}}</td>                
+                <td>{{enviroment.User.name}}</td>
+                <td>{{enviroment.EnviromentType.name}}</td>
+                <td>{{enviroment.description}}</td>
+                <td>
+                  <span class="inline-block">
+                    <button class="btn btn-info btn-icon no-margin" (click)="update(enviroment)">
+                      <i class="icofont icofont-edit"></i>
+                    </button>
+                  </span>
+                  <span class="inline-block margin-left-10">
+                    <button class="btn btn-danger btn-icon no-margin" (click)="getModalAnswer(enviroment.id)">
+                      <i class="icofont icofont-trash"></i>
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="noContents" *ngIf="lengthEnvironmentsPagination > 10">
+            <pagination [totalItems]="lengthEnvironmentsPagination" (pageChanged)="pageChanged($event)"></pagination>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

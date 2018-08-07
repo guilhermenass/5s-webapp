@@ -1,0 +1,111 @@
+<div class="button-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card [title]="!question.id ? 'Cadastro de perguntas' : 'Edição de perguntas'">
+        <form #questionForm="ngForm" (submit)="save(question); this.questionForm.reset()">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Título </label>
+            <div class="col-sm-10">
+              <input type="text" [(ngModel)]="question.title" required name="title" #title="ngModel" class="form-control">
+              <span *ngIf="title.invalid && (title.dirty || title.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Unidade</label>
+            <div class="col-sm-10">
+              <select [(ngModel)]="unitId" #enviromentUnit="ngModel" required name="enviromentUnit" (change)="loadEnviromentsTypeByUnit($event.target.value)" class="form-control">
+                  <option disabled *ngIf="units?.length == 0">Nenhuma unidade cadastrada.</option>
+                <option *ngFor="let unit of units" [value]="unit.id">
+                  {{ unit.name }}                                                                                                                                                                                                                                                                                                     
+                </option> 
+              </select>
+              <span *ngIf="enviromentUnit.invalid && (enviromentUnit.dirty || enviromentUnit.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>  
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Tipo(s) de ambiente(s): </label>
+            <div class="col-sm-10">
+              <ng-select
+                  #environmentTypes="ngModel"
+                  [options]="selectItems"
+                  name="selectItems"
+                  multiple="true"
+                  notFoundMsg="Nenhum tipo de ambiente cadastrado."
+                  required
+                  [(ngModel)]="selectedEnviromentTypes">
+              </ng-select>
+              <span *ngIf="environmentTypes.invalid && (environmentTypes.dirty || environmentTypes.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+
+          <div *ngIf="unitId" class="checkbox-enviroments-type">
+            <label for="environmentTypes">
+                <input
+                  id="environmentTypes"
+                  [(ngModel)]="cbSelectAll"
+                  (change)="selectAll()"
+                  type="checkbox"
+                  name="environmentTypes"> 
+                Todos os ambientes
+            </label>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Descrição</label>
+            <div class="col-sm-10">
+              <textarea [(ngModel)]="question.description" name="description" class="textarea-width-100 form-control" name="comment"></textarea>
+            </div>
+          </div>
+  
+          <button class="btn btn-primary pull-right no-margin-right" type="submit" [disabled]="!questionForm.valid">Salvar</button>
+        </form>
+      </app-card>
+
+      <ng-template #noQuestions>
+        <p class="no-content">Nenhum registro para mostrar.</p>
+      </ng-template>
+
+      <app-card [title]="'Listagem de perguntas'">
+        <div class="row">
+          <h4 class="col-sm-2">Pesquisar:  </h4>
+          <input class="form-control col-sm-10" #QuestionSearch placeholder="Pesquise por uma Pergunta" (keyup)="findQuestion(QuestionSearch.value)" >
+        </div>
+        <div class="table-responsive">
+          <table *ngIf="questions?.length > 0; else noQuestions" class="table table--clean">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              <tr *ngFor="let question of questionFiltered">
+                <td>{{question.title}}</td>
+                <td>{{question.description}}</td>
+                <td>
+                  <span class="inline-block">
+                    <button class="btn btn-info btn-icon no-margin" (click)="update(question)">
+                      <i class="icofont icofont-edit"></i>
+                    </button>
+                  </span>
+                  <span class="inline-block margin-left-10">
+                    <button class="btn btn-danger btn-icon no-margin" (click)="getModalAnswer(question.id)">
+                      <i class="icofont icofont-trash"></i>
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="noContents" *ngIf="lengthQuestionPagination > 10">
+          <pagination [totalItems]="lengthQuestionPagination" (pageChanged)="pageChanged($event)"></pagination>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<div class="button-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card [title]="!user.id ? 'Cadastro de usuários' : 'Edição de usuários'">
+        <form #userForm="ngForm" (submit)="save(user); this.userForm.reset()">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Nome </label>
+            <div class="col-sm-10">
+              <input id="name" name="name" class="form-control" required [(ngModel)]="user.name" #name="ngModel">
+              <span *ngIf="name.invalid && (name.dirty || name.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Email </label>
+            <div class="col-sm-10">
+             <input id="email" name="email" class="form-control user-email"
+              required [(ngModel)]="user.email" #email="ngModel" >
+              <span *ngIf="email.invalid && (email.dirty || email.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+
+          <div class="form-group row" *ngIf="user.id">
+            <label class="col-sm-2 col-form-label">Senha</label>
+            <div class="col-sm-10">
+              <input type="password" name="password" [placeholder]="user.id ? 'Caso deseja alterar a senha atual, basta inserir a nova senha aqui!' : ''" 
+              [(ngModel)]="user.password" #password="ngModel" class="form-control" >
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Perfil </label>
+            <div class="col-sm-10"> 
+
+              <ng-select
+                  #profile="ngModel"
+                  [options]="selectedTypeUser"
+                  name="selectItems"
+                  multiple="true"
+                  required
+                  [(ngModel)]="selectItems">
+              </ng-select>
+            
+              <span *ngIf="profile.invalid && (profile.dirty || profile.touched)" style='color: red'>Este campo é obrigatório.</span>  
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary pull-right no-margin-right" [disabled]="!userForm.valid">Salvar</button>
+        </form>
+      </app-card>
+
+      <ng-template #noUsers>
+        <p class="no-content">Nenhum registro para mostrar.</p>
+      </ng-template>
+
+      <app-card [title]="'Listagem de usuários'">
+          <div class="row">
+            <h4 class="col-sm-2">Pesquisar:  </h4>
+            <input class="form-control col-sm-10" #userNameSearch  placeholder="Pesquise por um Usuário" (keyup)="findUsers(userNameSearch.value)" >
+          </div>
+        <div class="table-responsive">
+          <table *ngIf="users?.length > 0; else noUsers" class="table table--clean">
+            <thead>
+              <tr>
+                <th width="30%">Nome</th>
+                <th width="30%">E-mail</th>
+                <th width="30%">Perfil</th>
+                <th width="10%">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of userFiltered">
+                <td>{{user.name}}</td>
+                <td>{{user.email}}</td>
+                <td>{{ UserTypeDisplay[user.profile] }}</td>
+                <td>
+                  <span class="inline-block">
+                    <button class="btn btn-info btn-icon no-margin" (click)="update(user)">
+                      <i class="icofont icofont-edit" ></i>
+                    </button>
+                  </span>
+                  <span class="inline-block margin-left-10">
+                    <button class="btn btn-danger btn-icon no-margin" [disabled]="user.id === userSession.id" (click)="getModalAnswer(user.id)">
+                      <i class="icofont icofont-trash" title="Você não pode remover o seu próprio usuário"></i>
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="noContents" *ngIf="lengthUsersPagination > 10">
+            <pagination [totalItems]="lengthUsersPagination" (pageChanged)="pageChanged($event)"></pagination>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>
+

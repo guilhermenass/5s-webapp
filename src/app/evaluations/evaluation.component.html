@@ -1,0 +1,129 @@
+<div class="button-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-card [title]="'Cadastro de Avaliações'">
+        <form #evaluationForm="ngForm" (submit)="save(evaluation); this.evaluationForm.reset()">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Título</label>
+            <div class="col-sm-10">
+              <input [(ngModel)]="evaluation.title" required name="title" #title="ngModel" type="text" class="form-control">
+              <span *ngIf="title.invalid && (title.dirty || title.touched)" style='color: red'>Este campo é obrigatório.</span>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Unidade</label>
+            <div class="col-sm-10">
+              <select [(ngModel)]="evaluation.units_id" #evaluationUnit="ngModel" required name="evaluationUnit" (change)="loadEnviromentsByUnit($event.target.value)"
+                class="form-control">
+                <option disabled *ngIf="units?.length == 0">Nenhuma unidade cadastrada.</option>
+                <option *ngFor="let unit of units" [value]="unit.id">
+                  {{ unit.name }}
+                </option>
+              </select>
+              <span *ngIf="evaluationUnit.invalid && (evaluationUnit.dirty || evaluationUnit.touched)" style='color: red'>Este campo é obrigatório.</span>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Ambiente(s)</label>
+            <div class="col-sm-10">
+              <ng-select #environments="ngModel" [options]="selectItems" name="selectItems" multiple="true" notFoundMsg="Nenhum ambiente cadastrado."
+                required [(ngModel)]="selectedEnviroment">
+              </ng-select>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <label class="col-sm-2 col-form-label">Período</label>
+            <div class="col-xs-12 col-12 col-sm-6 col-md-4 form-group">
+              <input class="form-control" bsDaterangepicker name="period" [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY', locale: 'pt-br'}"
+                #drp="bsDaterangepicker" [(ngModel)]="period" onkeydown="return false">
+            </div>
+            <div class="col-xs-12 col-12 col-md-3 form-group">
+              <button type="button" class="btn btn-success" (click)="drp.toggle()" [attr.aria-expanded]="drp.isOpen">
+                <i class='far fa-calendar-alt'></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Avaliador</label>
+            <div class="col-sm-10">
+              <select [(ngModel)]="evaluation.users_id" #appraiser="ngModel" required name="appraiser" class="form-control">
+                <option *ngFor="let user of users" [value]="user.id">
+                  {{ user.name }}
+                </option>
+              </select>
+              <span *ngIf="appraiser.invalid && (appraiser.dirty || appraiser.touched)" style='color: red'>Este campo é obrigatório.</span>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Descrição</label>
+            <div class="col-sm-10">
+              <textarea [(ngModel)]="evaluation.description" class="textarea-width-100 form-control" name="comment"></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary pull-right no-margin-right" [disabled]="!evaluationForm.valid" type="submit">Salvar</button>
+        </form>
+      </app-card>
+
+      <ng-template #noEvaluations>
+        <p class="no-content">Nenhum registro para mostrar.</p>
+      </ng-template>
+
+      <app-card [title]="'Listagem de Avaliações'">
+        <div class="row">
+          <h4 class="col-sm-2">Pesquisar: </h4>
+          <input class="form-control col-sm-10" #evaluationSearch placeholder="Pesquise por uma Avaliação" (keyup)="findEvaluations(evaluationSearch.value)">
+        </div>
+        <div class="table-responsive">
+          <table *ngIf="evaluations?.length > 0; else noEvaluations" class="table table--clean">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Avaliador</th>
+                <th>Ambiente(s)</th>
+                <th>Status</th>
+                <th>Data Inicial</th>
+                <th>Data Final</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let evaluation of evaluationFiltered">
+                <td>{{evaluation.title}}</td>
+                <td>{{evaluation.User.name}}</td>
+                <td>{{evaluation.Enviroment.name}}</td>
+                <td>{{evaluation.status}}</td>
+                <td>{{evaluation.createDate | date: 'dd/MM/yyyy' }}</td>
+                <td>{{evaluation.dueDate | date: 'dd/MM/yyyy' }}</td>
+                <td>{{evaluation.description}}</td>
+                <td>
+                  <span class="inline-block">
+                    <button class="btn btn-info btn-icon no-margin" [disabled]="evaluation.status === 'CONCLUIDA'" (click)="update(evaluation)">
+                      <i class="icofont icofont-edit" title="Você não pode editar uma avaliação concluida"></i>
+                    </button>
+                  </span>
+                  <span class="inline-block margin-left-10">
+                    <button class="btn btn-danger btn-icon no-margin" [disabled]="evaluation.status === 'CONCLUIDA'" (click)="getModalAnswer(evaluation.id)">
+                      <i class="icofont icofont-trash" title="Você não pode remover uma avaliação concluida"></i>
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="noContents" *ngIf="lengthEvaluationsPagination > 10">
+            <pagination [totalItems]="lengthEvaluationsPagination" (pageChanged)="pageChanged($event)"></pagination>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

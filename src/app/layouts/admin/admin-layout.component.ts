@@ -4,6 +4,7 @@ import { state, style, transition, animate, trigger, AUTO_STYLE } from '@angular
 import { User } from '../../users/user';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { MenuItems } from '../../shared/menu-items/menu-items';
+import { environment } from '../../../environments/environment'
 
 const helper = new JwtHelperService();
 
@@ -120,6 +121,6 @@ export class AdminLayoutComponent implements OnInit {
 
   logout() {
     localStorage.removeItem('token');
-    window.location.href = 'http://localhost:8080/';
+    window.location.href = environment.loginUrl;
   }
 }

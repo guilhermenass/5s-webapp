@@ -7,4 +7,5 @@ export class Evaluation {
     dueDate: Date;
     users_id: number;
     description: string;
+    units_id: number;
 }

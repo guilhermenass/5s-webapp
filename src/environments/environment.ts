@@ -5,5 +5,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:4000'
+  apiUrl: 'http://localhost:4000',
+  webappUrl: 'http://localhost:4200',
+  loginUrl: 'http://localhost:8080'
 };

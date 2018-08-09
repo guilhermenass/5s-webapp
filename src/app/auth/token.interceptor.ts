@@ -9,11 +9,14 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/do';
+import { environment } from '../../environments/environment'
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-  constructor() {}
+  constructor() {
+    
+  }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
@@ -31,7 +34,7 @@ export class TokenInterceptor implements HttpInterceptor {
     (err: any) => {
         if (err instanceof HttpErrorResponse) {
             if (err.status === 401) {
-                window.location.href = 'http://localhost:8080/';
+                window.location.href = environment.loginUrl;
             }
         }
     });

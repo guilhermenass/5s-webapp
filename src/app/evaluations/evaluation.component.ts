@@ -83,8 +83,16 @@ export class EvaluationComponent implements OnInit {
   loadUsers() {
     this.userService.load()
       .subscribe(users => {
-        this.users = users;
+        this.users = this.getAppraisers(users);
       })
+  }
+
+  getAppraisers(users) {
+    return users.filter(
+      user => user.profile == 2 ||
+      user.profile == 3 ||
+      user.profile == 6 || 
+      user.profile == 7);   
   }
 
   loadUnits() {

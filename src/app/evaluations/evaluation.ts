@@ -1,3 +1,5 @@
+import { Enviroment } from "../enviroments/enviroment";
+
 export class Evaluation {
     id: number;
     title: string;
@@ -8,4 +10,5 @@ export class Evaluation {
     users_id: number;
     description: string;
     units_id: number;
+    Environment: Enviroment;
 }

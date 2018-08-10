@@ -21,6 +21,7 @@ import { Unit } from '../units/unit';
 })
 
 export class EvaluationComponent implements OnInit {
+  isMultiple: boolean = true;
   evaluation: Evaluation = new Evaluation();
   evaluations: Evaluation[];
   users: User[];
@@ -125,9 +126,12 @@ export class EvaluationComponent implements OnInit {
   }
 
   update(evaluation: Evaluation): void {
+    this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
     this.selectedEnviroment = [];
     if(evaluation.status != "CONCLUIDA"){   
+      evaluation.units_id = evaluation.Environment.units_id;  
       moment.locale('pt-BR');
+      this.loadEnviromentsByUnit(evaluation.units_id);
       this.period = [moment(evaluation.createDate).toDate(), moment(evaluation.dueDate).toDate()];
       this.evaluation = evaluation;
       this.selectedEnviroment.push(this.evaluation.enviroments_id.toString());

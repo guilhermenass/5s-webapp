@@ -73,7 +73,8 @@ export class EnviromentComponent implements OnInit {
     this.userService.load()
     .subscribe(
       users => {
-        this.users = users;
+        /* Todos os perfis que são maiores que 3, possuem algum vinculo com RESPONSÁVEL */
+        this.users = users.filter(user => user.profile > 3);
       },
       error => {
         console.log(error);

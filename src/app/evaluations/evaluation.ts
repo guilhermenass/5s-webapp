@@ -10,5 +10,5 @@ export class Evaluation {
     users_id: number;
     description: string;
     units_id: number;
-    Environment: Enviroment;
+    Enviroment: Enviroment;
 }

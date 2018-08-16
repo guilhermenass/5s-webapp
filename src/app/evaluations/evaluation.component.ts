@@ -129,7 +129,7 @@ export class EvaluationComponent implements OnInit {
     this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
     this.selectedEnviroment = [];
     if(evaluation.status != "CONCLUIDA"){   
-      evaluation.units_id = evaluation.Environment.units_id;  
+      evaluation.units_id  = evaluation.Enviroment.units_id; 
       moment.locale('pt-BR');
       this.loadEnviromentsByUnit(evaluation.units_id);
       this.period = [moment(evaluation.createDate).toDate(), moment(evaluation.dueDate).toDate()];

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Evaluation } from './evaluation';
-import { EvaluationService } from './evaluation.service';
+import { Audit } from './audit';
+import { AuditService } from './audit.service';
 import { EnviromentService } from '../enviroments/enviroment.service';
 import { Enviroment } from '../enviroments/enviroment';
 import { User } from '../users/user';
@@ -16,14 +16,14 @@ import { UnitService } from '../units/unit.service';
 import { Unit } from '../units/unit';
 
 @Component({
-  selector: 'app-evaluation',
-  templateUrl: './evaluation.component.html'
+  selector: 'app-audit',
+  templateUrl: './audit.component.html'
 })
 
-export class EvaluationComponent implements OnInit {
+export class AuditComponent implements OnInit {
   isMultiple: boolean = true;
-  evaluation: Evaluation = new Evaluation();
-  evaluations: Evaluation[];
+  audit: Audit = new Audit();
+  audits: Audit[];
   users: User[];
   units: Unit[];
   enviroments: Enviroment[];
@@ -32,11 +32,11 @@ export class EvaluationComponent implements OnInit {
   selectedEnviroment: Array<string> = [];
 
   //Filter and pagination
-  evaluationFiltered: Evaluation[];
-  lengthEvaluationsPagination: number;
-  @ViewChild('evaluationForm') evaluationForm : NgForm;
+  auditFiltered: Audit[];
+  lengthAuditsPagination: number;
+  @ViewChild('auditForm') auditForm : NgForm;
 
-  constructor(private evaluationService: EvaluationService,
+  constructor(private auditService: AuditService,
     private userService: UserService,
     private enviromentService: EnviromentService,
     private unitService: UnitService) {
@@ -51,19 +51,19 @@ export class EvaluationComponent implements OnInit {
     this.load();
   }
 
-  findEvaluations(typed: string) {
-    this.evaluationFiltered = this.evaluations.filter(
-      evaluation => evaluation.title.toLowerCase().includes(typed.toLowerCase()));
-    this.lengthEvaluationsPagination = this.evaluationFiltered.length
+  findAudits(typed: string) {
+    this.auditFiltered = this.audits.filter(
+      audit => audit.title.toLowerCase().includes(typed.toLowerCase()));
+    this.lengthAuditsPagination = this.auditFiltered.length
   }
 
   load() {
-    this.evaluationService.load()
+    this.auditService.load()
       .subscribe(
-        evaluations => {
-          this.evaluations = evaluations;
-          this.evaluationFiltered = this.evaluations.slice(0, 10);
-          this.lengthEvaluationsPagination = this.evaluations.length;
+        audits => {
+          this.audits = audits;
+          this.auditFiltered = this.audits.slice(0, 10);
+          this.lengthAuditsPagination = this.audits.length;
         },
         error => {
           console.log(error)
@@ -103,20 +103,20 @@ export class EvaluationComponent implements OnInit {
       })
   }
 
-  save(evaluation) {
-    evaluation.enviroments_id = this.selectedEnviroment;
-    evaluation.createDate = this.period[0];
-    evaluation.dueDate = this.period[1];
-    this.evaluation.status = this.checkStatus(evaluation);
-    if(!evaluation.id){
-      this.evaluationService.save(evaluation)
+  save(audit) {
+    audit.enviroments_id = this.selectedEnviroment;
+    audit.createDate = this.period[0];
+    audit.dueDate = this.period[1];
+    this.audit.status = this.checkStatus(audit);
+    if(!audit.id){
+      this.auditService.save(audit)
         .subscribe(res => {
           this.getValidation(res);
           this.load();
         })
     } else {
-      if(evaluation.status != "CONCLUIDA") {
-        this.evaluationService.update(evaluation)
+      if(audit.status != "CONCLUIDA") {
+        this.auditService.update(audit)
         .subscribe(res => {
           this.getValidation(res);
           this.load();
@@ -125,16 +125,16 @@ export class EvaluationComponent implements OnInit {
     }
   }
 
-  update(evaluation: Evaluation): void {
+  update(audit: Audit): void {
     this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
     this.selectedEnviroment = [];
-    if(evaluation.status != "CONCLUIDA"){   
-      evaluation.units_id = evaluation.Environment.units_id;  
+    if(audit.status != "CONCLUIDA"){   
+      audit.units_id  = audit.Enviroment.units_id; 
       moment.locale('pt-BR');
-      this.loadEnviromentsByUnit(evaluation.units_id);
-      this.period = [moment(evaluation.createDate).toDate(), moment(evaluation.dueDate).toDate()];
-      this.evaluation = evaluation;
-      this.selectedEnviroment.push(this.evaluation.enviroments_id.toString());
+      this.loadEnviromentsByUnit(audit.units_id);
+      this.period = [moment(audit.createDate).toDate(), moment(audit.dueDate).toDate()];
+      this.audit = audit;
+      this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
     }
   }
@@ -147,32 +147,32 @@ export class EvaluationComponent implements OnInit {
     });
   }
 
-  getModalAnswer(evaluationId) {
+  getModalAnswer(auditId) {
     swal({
-      title: 'Exclusão de avaliação',
-      text: 'Tem certeza que deseja excluir a avaliação?',
+      title: 'Exclusão de auditoria',
+      text: 'Tem certeza que deseja excluir a auditoria?',
       buttons: ['Cancelar', 'OK'],
       icon: 'warning',
       dangerMode: true,
     })
       .then((willDelete) => {
         if (willDelete)
-          this.remove(evaluationId);
+          this.remove(auditId);
       });
   }
 
   pageChanged(event: PageChangedEvent): void {
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
-    this.evaluationFiltered = this.evaluations.slice(startItem, endItem);
+    this.auditFiltered = this.audits.slice(startItem, endItem);
   }
 
   remove(id: number): void {
-    this.evaluationService.remove(id)
+    this.auditService.remove(id)
     .subscribe((res) => {
       this.getValidation(res);
       this.load();
-      this.evaluationForm.reset();
+      this.auditForm.reset();
     },
       error => {
         this.getValidation(error.error)
@@ -180,8 +180,8 @@ export class EvaluationComponent implements OnInit {
     );
   }
 
-  checkStatus(evaluation: Evaluation): string {
-    return evaluation.dueDate.getTime() >= new Date().setHours(0,0,0,0)
-      ? evaluation.status = "PENDENTE" : evaluation.status = "ATRASADA";
+  checkStatus(audit: Audit): string {
+    return audit.dueDate.getTime() >= new Date().setHours(0,0,0,0)
+      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";
   }
 }

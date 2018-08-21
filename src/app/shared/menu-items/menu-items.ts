@@ -46,8 +46,8 @@ const MENUITEMS = [
         icon: 'fas fa-users'
       },
       {
-        state: 'evaluations',
-        name: 'Avaliações',
+        state: 'audits',
+        name: 'Auditorias',
         type: 'link',
         icon: ' far fa-check-square'
       },

@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { EvaluationComponent } from './evaluation.component';
-import { EvaluationRoutes } from './evaluation.routing';
+import { AuditComponent } from './audit.component';
+import { AuditRoutes } from './audit.routing';
 import { SharedModule } from '../shared/shared.module';
 import { BrMasker4Module } from 'brmasker4';
 import { SelectModule } from 'ng-select';
@@ -11,13 +11,13 @@ import { SelectModule } from 'ng-select';
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule.forChild(EvaluationRoutes),
+    RouterModule.forChild(AuditRoutes),
     SharedModule,
     BsDatepickerModule.forRoot(),
     BrMasker4Module,
     SelectModule
   ],
-  declarations: [EvaluationComponent]
+  declarations: [AuditComponent]
 })
 
-export class EvaluationModule { }
+export class AuditModule { }

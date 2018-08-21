@@ -4,36 +4,36 @@ import { Observable } from 'rxjs';
 import { of } from 'rxjs';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import { Evaluation } from './evaluation';
+import { Audit } from './audit';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 
-export class EvaluationService {
+export class AuditService {
     
     url: string;
 
    constructor(public http: HttpClient) {
-       this.url = `${environment.apiUrl}/evaluations`;
+       this.url = `${environment.apiUrl}/audits`;
     }
 
-   save(evaluation: Evaluation) {
+   save(audit: Audit) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json'
             })
         };
-      return this.http.post(this.url, evaluation);
+      return this.http.post(this.url, audit);
     }
 
-    update(evaluation: Evaluation) {
+    update(audit: Audit) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json'
             })
         };
-      return this.http.put(`${this.url}/${evaluation.id}`, evaluation, httpOptions);
+      return this.http.put(`${this.url}/${audit.id}`, audit, httpOptions);
     }
 
     load(): Observable<any> {

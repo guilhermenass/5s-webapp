@@ -20,8 +20,8 @@ export const AppRoutes: Routes = [{
       path: 'users',
       loadChildren: './users/user.module#UserModule',
     }, {
-      path: 'evaluations',
-      loadChildren: './evaluations/evaluation.module#EvaluationModule',
+      path: 'audits',
+      loadChildren: './audits/audit.module#AuditModule',
     }, {
       path: 'enviroments',
       loadChildren: './enviroments/enviroment.module#EnviromentModule',

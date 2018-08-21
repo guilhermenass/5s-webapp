@@ -1,6 +1,6 @@
 import { Enviroment } from "../enviroments/enviroment";
 
-export class Evaluation {
+export class Audit {
     id: number;
     title: string;
     status: string;

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import { EvaluationService } from '../evaluations/evaluation.service';
-import { Evaluation } from '../evaluations/evaluation';
+import { AuditService } from '../audits/audit.service';
+import { Audit } from '../audits/audit';
 declare const $: any;
 declare var Morris: any;
 
@@ -11,29 +11,29 @@ declare var Morris: any;
 
 export class DashboardComponent implements OnInit {
 
-  evaluationss: Evaluation[];
-  late: Evaluation[] = new Array<Evaluation>();
-  outstanding: Evaluation[] = new Array<Evaluation>();
-  concluded: Evaluation[] = new Array<Evaluation>();
+  audits: Audit[];
+  late: Audit[] = new Array<Audit>();
+  outstanding: Audit[] = new Array<Audit>();
+  concluded: Audit[] = new Array<Audit>();
   
-  constructor(private evaluationService: EvaluationService) { 
-    this.evaluationService.load()
+  constructor(private auditService: AuditService) { 
+    this.auditService.load()
         .subscribe(
-            evaluations => {
-            this.evaluationss = evaluations;
-              this.FindEvaluationStatus(evaluations);
+            audits => {
+            this.audits = audits;
+              this.findAuditStatus(audits);
           });
   }
 
-  FindEvaluationStatus(evaluations: Evaluation[]){
+  findAuditStatus(audits: Audit[]){
 
-    evaluations.forEach(evaluation =>{
-      if(evaluation.status.includes('CONCLUIDA')){
-        this.concluded.push(evaluation);
-      }else if(evaluation.status == "ATRASADA" ){
-        this.late.push(evaluation)
+    audits.forEach(audit =>{
+      if(audit.status.includes('CONCLUIDA')){
+        this.concluded.push(audit);
+      }else if(audit.status == "ATRASADA" ){
+        this.late.push(audit)
       } else {
-        this.outstanding.push(evaluation);
+        this.outstanding.push(audit);
       }
     });
   }

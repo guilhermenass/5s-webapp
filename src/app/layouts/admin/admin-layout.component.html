@@ -9,11 +9,7 @@
           </a>
           <a [routerLink]="['/']">
             <img src="../../.././assets/images/logo-rodape.png" alt="FIESC SENAI a força da industria catarinense" style="width:auto;">
-          </a>
-          <!--a (click)="onMobileMenu()" class="mobile-options">
-            <i class="ti-more"></i>
-          </a-->
-          
+          </a>          
         </div>
         
         <div class="navbar-container">
@@ -44,7 +40,7 @@
               <div class="main-menu-header">
                 <div class="user-details">
                   <span>Bem vindo,</span>
-                  <span>{{userSession?.name}}</span>
+                  <span>{{userSession?.name | async }}</span>
                 </div>
               </div>
 

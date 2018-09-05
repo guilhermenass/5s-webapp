@@ -11,6 +11,8 @@ import { UnitService } from '../units/unit.service';
 import { Unit } from '../units/unit';
 import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { SenseEnum } from './sense-enum';
+
 
 @Component({
   selector: 'app-question',
@@ -35,6 +37,7 @@ export class QuestionComponent implements OnInit {
   selectedEnviromentTypes: Array<String> = [];
   questionFiltered: Question[];
   lengthQuestionPagination: number;
+  SenseEnum = SenseEnum;
 
   @ViewChild('questionForm') questionForm: NgForm;
 

@@ -40,10 +40,9 @@
               <div class="main-menu-header">
                 <div class="user-details">
                   <span>Bem vindo,</span>
-                  <span>{{userSession?.name | async }}</span>
+                  <span>{{userSession?.name}}</span>
                 </div>
               </div>
-
             </div>
             <div>
             <div *ngFor="let asideItems of menuItems.getAll()">

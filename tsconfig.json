@@ -1,5 +1,5 @@
 {
-  "compileOnSave": false,
+  "compileOnSave": true,
   "compilerOptions": {
     "paths": {
       "ng2-go-top-button/*": ["./node_modules/ng2-go-top-button/*"]

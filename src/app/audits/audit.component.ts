@@ -4,6 +4,7 @@ import { AuditService } from './audit.service';
 import { EnviromentService } from '../enviroments/enviroment.service';
 import { Enviroment } from '../enviroments/enviroment';
 import { User } from '../users/user';
+import { Unit } from '../units/unit';
 import { UserService } from '../users/user.service';
 import * as moment from 'moment';
 import { IOption } from 'ng-select';
@@ -13,7 +14,8 @@ import { ptBrLocale } from 'ngx-bootstrap/locale';
 import swal from 'sweetalert';
 import { NgForm } from '@angular/forms';
 import { UnitService } from '../units/unit.service';
-import { Unit } from '../units/unit';
+import { Evaluation } from '../evaluations/evaluation'
+import { EvaluationService } from '../evaluations/evaluation.service';
 
 @Component({
   selector: 'app-audit',
@@ -24,11 +26,12 @@ export class AuditComponent implements OnInit {
   isMultiple: boolean = true;
   audit: Audit = new Audit();
   audits: Audit[];
-  users: User[];
-  units: Unit[];
-  enviroments: Enviroment[];
   period: Date[];
-  selectItems: Array<IOption>;
+  users: User[];
+  enviroments: Enviroment[];
+  units: Unit[];
+  evaluation: Evaluation = new Evaluation();
+  selectItems: Array<IOption> ;
   selectedEnviroment: Array<string> = [];
 
   //Filter and pagination
@@ -37,14 +40,16 @@ export class AuditComponent implements OnInit {
   @ViewChild('auditForm') auditForm : NgForm;
 
   constructor(private auditService: AuditService,
-    private userService: UserService,
-    private enviromentService: EnviromentService,
-    private unitService: UnitService) {
+    private _userService: UserService,
+    private _enviromentService: EnviromentService,
+    private _evaluationService: EvaluationService,
+    private _unitService: UnitService) {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
   }
 
   ngOnInit() {
+
     moment.locale('pt-br');
     this.loadUsers();
     this.loadUnits();
@@ -71,20 +76,27 @@ export class AuditComponent implements OnInit {
     );
   }
 
-  loadEnviromentsByUnit(unitId) {
-    this.enviromentService.loadEnviromentsByUnit(unitId)
-      .subscribe(enviroments => {
-        this.enviroments = enviroments;
-        this.selectItems = enviroments
-          .map(({ id, name }) => (
-            { label: name, value: id.toString() }));
+   loadEnviromentsByUnit(unitId) {
+      this._enviromentService.loadEnviromentsByUnit(unitId)
+        .subscribe(enviroments => {
+          this.enviroments = enviroments;
+          this.selectItems = enviroments
+            .map(({ id, name }) => (
+              { label: name, value: id.toString() }));
+      })
+   }
+
+  loadUsers() {
+    this._userService.load()
+      .subscribe(users => {
+        this.users = this.getAppraisers(users);
       })
   }
 
-  loadUsers() {
-    this.userService.load()
-      .subscribe(users => {
-        this.users = this.getAppraisers(users);
+  loadUnits() {
+    this._unitService.load()
+      .subscribe(units => {
+        this.units = units;
       })
   }
 
@@ -96,22 +108,22 @@ export class AuditComponent implements OnInit {
       user.profile == 7);   
   }
 
-  loadUnits() {
-    this.unitService.load()
-      .subscribe(units => {
-        this.units = units;
-      })
-  }
-
   save(audit) {
-    audit.enviroments_id = this.selectedEnviroment;
-    audit.createDate = this.period[0];
-    audit.dueDate = this.period[1];
+    this.evaluation.enviroments_id = this.selectedEnviroment;
+    audit.initial_date = this.period[0];
+    audit.due_date = this.period[1];
     this.audit.status = this.checkStatus(audit);
+    audit.evaluations = this.evaluation;
     if(!audit.id){
       this.auditService.save(audit)
         .subscribe(res => {
           this.getValidation(res);
+          audit.id = res['auditId'];
+          this._evaluationService.save(audit)
+          .subscribe(res => {
+            console.log(res);
+          })
+          this.auditForm.reset();
           this.load();
         })
     } else {
@@ -119,20 +131,21 @@ export class AuditComponent implements OnInit {
         this.auditService.update(audit)
         .subscribe(res => {
           this.getValidation(res);
+          this.auditForm.reset();
           this.load();
         })
       }
     }
   }
 
-  update(audit: Audit): void {
+  update(audit: Audit, evaluation): void {
     this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
     this.selectedEnviroment = [];
     if(audit.status != "CONCLUIDA"){   
-      audit.units_id  = audit.Enviroment.units_id; 
+      audit.units_id  = evaluation.units_id;
       moment.locale('pt-BR');
-      this.loadEnviromentsByUnit(audit.units_id);
-      this.period = [moment(audit.createDate).toDate(), moment(audit.dueDate).toDate()];
+      this.loadEnviromentsByUnit(evaluation.units_id);
+      this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
       this.audit = audit;
       this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
@@ -181,7 +194,7 @@ export class AuditComponent implements OnInit {
   }
 
   checkStatus(audit: Audit): string {
-    return audit.dueDate.getTime() >= new Date().setHours(0,0,0,0)
+    return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
       ? audit.status = "PENDENTE" : audit.status = "ATRASADA";
   }
 }

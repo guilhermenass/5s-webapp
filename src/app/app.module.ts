@@ -22,6 +22,7 @@ import { EnviromentTypeService } from './enviroments-type/enviroment-type.servic
 import { EnviromentService } from './enviroments/enviroment.service';
 import { QuestionService } from './questions/question.service';
 import { AuditService } from './audits/audit.service';
+import { EvaluationService } from './evaluations/evaluation.service';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,7 @@ import { AuditService } from './audits/audit.service';
       useClass: TokenInterceptor,
       multi: true
     },
-    UserService, UnitService, EnviromentTypeService, EnviromentService, QuestionService, AuditService
+    UserService, UnitService, EnviromentTypeService, EnviromentService, QuestionService, AuditService, EvaluationService
   ],
   bootstrap: [AppComponent]
 })

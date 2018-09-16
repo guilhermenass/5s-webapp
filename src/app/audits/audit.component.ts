@@ -138,13 +138,14 @@ export class AuditComponent implements OnInit {
     }
   }
 
-  update(audit: Audit, evaluation): void {
+  update(audit: Audit): void {
     this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
     this.selectedEnviroment = [];
-    if(audit.status != "CONCLUIDA"){   
-      audit.units_id  = evaluation.units_id;
+    if(audit.status != "CONCLUIDA"){  
+      this.evaluation.users_id = audit.users_id; 
+      audit.units_id  = audit.units_id;
       moment.locale('pt-BR');
-      this.loadEnviromentsByUnit(evaluation.units_id);
+      this.loadEnviromentsByUnit(audit.units_id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
       this.audit = audit;
       this.selectedEnviroment.push(this.audit.enviroments_id.toString());

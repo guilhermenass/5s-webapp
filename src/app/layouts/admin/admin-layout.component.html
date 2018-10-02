@@ -9,11 +9,7 @@
           </a>
           <a [routerLink]="['/']">
             <img src="../../.././assets/images/logo-rodape.png" alt="FIESC SENAI a força da industria catarinense" style="width:auto;">
-          </a>
-          <!--a (click)="onMobileMenu()" class="mobile-options">
-            <i class="ti-more"></i>
-          </a-->
-          
+          </a>          
         </div>
         
         <div class="navbar-container">
@@ -47,7 +43,6 @@
                   <span>{{userSession?.name}}</span>
                 </div>
               </div>
-
             </div>
             <div>
             <div *ngFor="let asideItems of menuItems.getAll()">

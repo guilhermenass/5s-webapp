@@ -5,8 +5,8 @@ export class Audit {
     title: string;
     status: string;
     enviroments_id: number;
-    createDate: Date;
-    dueDate: Date;
+    initial_date: Date;
+    due_date: Date;
     users_id: number;
     description: string;
     units_id: number;

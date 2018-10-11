@@ -48,15 +48,6 @@
                 [draggable]="false" 
                 [resizeable]="false">
                   <ng-template 
-                    ngx-datatable-header-template 
-                    let-value="value" 
-                    let-allRowsSelected="allRowsSelected" 
-                    let-selectFn="selectFn">
-                    <input type="checkbox" 
-                      [checked]="allRowsSelected" 
-                      (change)="selectFn(!allRowsSelected)"/>
-                  </ng-template>
-                  <ng-template 
                     ngx-datatable-cell-template 
                     let-value="value" 
                     let-isSelected="isSelected" 
@@ -85,13 +76,13 @@
               <button class="btn btn-primary" type="button" (click)="createEvaluation()">Adicionar</button>
 
               <div class='selected-column'>
-                  <h4>Selections <small>({{selected?.length}})</small></h4>
+                <label class=" col-form-label">Avaliações <small>({{createEvaluations?.length}})</small></label>
                   <ul>
                     <li *ngFor='let sel of createEvaluations'>
                       {{sel.environments_id}} 
                       {{sel.users_id}}
                     </li>
-                    <li *ngIf="!selected?.length">No Selections</li>
+                    <li *ngIf="!createEvaluations?.length">Nenhuma Avaliação</li>
                   </ul>
                 </div>
             </div>
@@ -113,7 +104,7 @@
             </div>
           </div> -->
 
-          <div class="row">
+          <div class="row" style="margin-top: 30px">
             <label class="col-sm-2 col-form-label">Período</label>
             <div class="col-xs-12 col-12 col-sm-6 col-md-4 form-group">
               <input class="form-control" bsDaterangepicker name="period" [bsConfig]="{rangeInputFormat: 'DD/MM/YYYY', locale: 'pt-br'}"

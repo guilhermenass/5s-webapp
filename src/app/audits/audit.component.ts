@@ -16,6 +16,7 @@ import { NgForm } from '@angular/forms';
 import { UnitService } from '../units/unit.service';
 import { Evaluation } from '../evaluations/evaluation'
 import { EvaluationService } from '../evaluations/evaluation.service';
+import { CreateEvaluationDto } from './create-evaluation-dto';
 
 @Component({
   selector: 'app-audit',
@@ -23,6 +24,24 @@ import { EvaluationService } from '../evaluations/evaluation.service';
 })
 
 export class AuditComponent implements OnInit {
+
+
+  selected = [];
+
+  user_id:number ;
+
+  createEvaluations = new Array<CreateEvaluationDto>();
+  
+   rows = [
+    { id: 0, name: 'Austin'},
+    { id: 1, name: 'Dany'},
+    { id: 2, name: 'Molly'},
+    { id: 3, name: 'Nolly'},
+    { id: 4, name: 'Polly'},
+    { id: 5, name: 'Oolly'},
+  ];
+
+
   isMultiple: boolean = true;
   audit: Audit = new Audit();
   audits: Audit[];
@@ -56,6 +75,11 @@ export class AuditComponent implements OnInit {
     this.load();
   }
 
+  createEvaluation(){
+    this.selected.forEach((environment) => {
+      this.createEvaluations.push(new CreateEvaluationDto(environment.id, this.user_id));
+    })
+  }
   findAudits(typed: string) {
     this.auditFiltered = this.audits.filter(
       audit => audit.title.toLowerCase().includes(typed.toLowerCase()));
@@ -80,10 +104,8 @@ export class AuditComponent implements OnInit {
       this._enviromentService.loadEnviromentsByUnit(unitId)
         .subscribe(enviroments => {
           this.enviroments = enviroments;
-          this.selectItems = enviroments
-            .map(({ id, name }) => (
-              { label: name, value: id.toString() }));
-      })
+          this.rows = enviroments;
+      });
    }
 
   loadUsers() {

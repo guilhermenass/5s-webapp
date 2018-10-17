@@ -118,7 +118,7 @@
             </div>
           </div>
 
-          <button class="btn btn-primary pull-right no-margin-right" [disabled]="!auditForm.valid" type="submit">Salvar</button>
+          <button class="btn btn-primary pull-right no-margin-right" [disabled]="!auditForm.valid" type="button" (click)="save(audit);">Salvar</button>
         </form>
       </app-card>
 
@@ -127,7 +127,65 @@
       </ng-template>
 
       <app-card [title]="'Listagem de Auditorias'">
-        <div class="row">
+
+          <ngx-datatable
+          #myTable
+          class='material expandable'
+          [columnMode]="'force'"
+          [rowHeight]="50"
+          [limit]="10"
+          [scrollbarV]="false"
+          [rows]='audits'
+          (page)="onPage($event)">
+          <!-- Row Detail Template -->
+          <ngx-datatable-row-detail [rowHeight]="100" #myDetailRow (toggle)="onDetailToggle($event)">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+              <div style="padding-left:35px; width:100px;">
+                  <div class="table-responsive">
+                      <table class="table table--clean">
+                        <thead>
+                          <tr>
+                            <th>Ambiente</th>
+                            <th>Avaliador</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let evaluate of row.evaluations">
+                            <td>{{evaluate.user_name}}</td> 
+                            <td>{{evaluate.environment_name}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div> 
+              </div>
+            </ng-template>
+          </ngx-datatable-row-detail>
+  
+          <!-- Column Templates -->
+           <ngx-datatable-column
+            [width]="50"
+            [resizeable]="false"
+            [sortable]="false"
+            [draggable]="false"
+            [canAutoResize]="false">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+              <a
+                href="javascript:void(0)"
+                [class.datatable-icon-right]="!expanded"
+                [class.datatable-icon-down]="expanded"
+                title="Expand/Collapse Row"
+                (click)="toggleExpandRow(row)">
+              </a>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column name="Auditoria" prop="title"></ngx-datatable-column>
+          <ngx-datatable-column name="Unidade" prop="unit_name"></ngx-datatable-column>
+          <ngx-datatable-column name="Data Inicial" prop="initial_date"> </ngx-datatable-column>
+          <ngx-datatable-column name="Data Final" prop="due_date"></ngx-datatable-column>
+          <ngx-datatable-column name="Descrição" prop="description"></ngx-datatable-column>
+          <ngx-datatable-column name="Status" prop="status"></ngx-datatable-column>
+        </ngx-datatable>
+        <!-- <div class="row">
           <h4 class="col-sm-2">Pesquisar: </h4>
           <input class="form-control col-sm-10" #auditSearch placeholder="Pesquise por uma auditoria" (keyup)="findAudits(auditSearch.value)">
         </div>
@@ -173,7 +231,7 @@
           <div class="noContents" *ngIf="lengthAuditsPagination > 10">
             <pagination [totalItems]="lengthAuditsPagination" (pageChanged)="pageChanged($event)"></pagination>
           </div>
-        </div>
+        </div> -->
       </app-card>
     </div>
   </div>

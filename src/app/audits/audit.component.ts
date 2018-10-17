@@ -16,6 +16,7 @@ import { UnitService } from '../units/unit.service';
 import { Evaluation } from './evaluation'
 import { EvaluationService } from '../evaluations/evaluation.service';
 import { SaveEvaluationDto } from './save-evaluation-dto';
+import { SaveAuditDto } from './save-audit-dto';
 
 @Component({
   selector: 'app-audit',
@@ -31,7 +32,7 @@ export class AuditComponent implements OnInit {
   }
   
   audit: Audit = new Audit();
-  
+  saveAudit: SaveAuditDto;
   evaluations = new Array<Evaluation>();
   enviroments: Enviroment[];
   enviromentsList: Enviroment[];
@@ -42,7 +43,7 @@ export class AuditComponent implements OnInit {
   selected = [];
 
   isMultiple: boolean = true;
-  audits: Audit[];
+  audits: Audit[] = new Array<Audit>();
   period: Date[];
   units: Unit[];
   selectItems: Array<IOption> ;
@@ -60,6 +61,10 @@ export class AuditComponent implements OnInit {
     private _unitService: UnitService) {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
+
+    this.fetch((data) => {
+      this.rows = data;
+    });
   }
 
   ngOnInit() {
@@ -67,7 +72,7 @@ export class AuditComponent implements OnInit {
     moment.locale('pt-br');
     this.loadUsers();
     this.loadUnits();
-    this.load();
+  //  this.load();
   }
 
   /**
@@ -106,7 +111,7 @@ export class AuditComponent implements OnInit {
     this.lengthAuditsPagination = this.auditFiltered.length
   }
 
-  load() {
+  /*load() {
     this.auditService.load()
       .subscribe(
         audits => {
@@ -118,7 +123,7 @@ export class AuditComponent implements OnInit {
           console.log(error)
         },
     );
-  }
+  }*/
 
    loadEnviromentsByUnit(unitId) {
       this._enviromentService.loadEnviromentsByUnit(unitId)
@@ -150,14 +155,19 @@ export class AuditComponent implements OnInit {
       user.profile == 7);   
   }
 
-  save(audit) {
-   /* this.evaluation.enviroments_id = this.selectedEnviroment;
+  save(audit: Audit) {
+  //  this.evaluation.enviroments_id = this.selectedEnviroment;
     audit.initial_date = this.period[0];
     audit.due_date = this.period[1];
-    this.audit.status = this.checkStatus(audit);
-    audit.evaluations = this.evaluation;
-    if(!audit.id){
-      this.auditService.save(audit)
+   // this.audit.status = this.checkStatus(audit);
+    audit.evaluations = this.evaluations;
+   this.saveAudit = this.mapperSaveAudit(audit);
+   // TODO:Remover
+   audit.unit_name = 'rever aqui';
+   this.audits.push(audit);
+   this.audits = this.audits.filter(x => x != null);
+   /* if(!audit.id){
+      this.auditService.save(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
           audit.id = res['auditId'];
@@ -169,8 +179,8 @@ export class AuditComponent implements OnInit {
           this.load();
         })
     } else {
-      if(audit.status != "CONCLUIDA") {
-        this.auditService.update(audit)
+      if(audit.status != 1) {
+        this.auditService.update(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
           this.auditForm.reset();
@@ -193,6 +203,25 @@ export class AuditComponent implements OnInit {
       this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
     }*/
+  }
+
+  mapperSaveAudit(audit: Audit): SaveAuditDto{
+    let evaluations = new Array<SaveEvaluationDto>();
+    this.evaluations.forEach( env => {
+      evaluations.push(this.mapperSaveEvaluation(env));
+    })
+    return new SaveAuditDto(audit.title, 
+                            audit.unit_id, 
+                            evaluations,
+                            audit.initial_date,
+                            audit.due_date,
+                            audit.description,
+                            0,
+                            audit.id)
+  }
+
+  mapperSaveEvaluation(evaluation: Evaluation): SaveEvaluationDto{
+    return new SaveEvaluationDto(evaluation.id, evaluation.environment_id, evaluation.user_id);
   }
 
   getValidation(res) {
@@ -220,14 +249,14 @@ export class AuditComponent implements OnInit {
   pageChanged(event: PageChangedEvent): void {
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
-    this.auditFiltered = this.audits.slice(startItem, endItem);
+   // this.auditFiltered = this.audits.slice(startItem, endItem);
   }
 
   remove(id: number): void {
     this.auditService.remove(id)
     .subscribe((res) => {
       this.getValidation(res);
-      this.load();
+     // this.load();
       this.auditForm.reset();
     },
       error => {
@@ -237,7 +266,43 @@ export class AuditComponent implements OnInit {
   }
 
   checkStatus(audit: Audit): string {
-    return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
-      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";
+    /*return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
+      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";*/
+      return null;
   }
+
+  @ViewChild('myTable') table: any;
+
+  rows: any[] = [];
+  expanded: any = {};
+  timeout: any;
+
+
+  onPage(event) {
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      console.log('paged!', event);
+    }, 100);
+  }
+
+  fetch(cb) {
+    const req = new XMLHttpRequest();
+    req.open('GET', `assets/data/100k.json`);
+
+    req.onload = () => {
+      cb(JSON.parse(req.response));
+    };
+
+    req.send();
+  }
+
+  toggleExpandRow(row) {
+    console.log('Toggled Expand Row!', row);
+    this.table.rowDetail.toggleExpandRow(row);
+  }
+
+  onDetailToggle(event) {
+    console.log('Detail Toggled', event);
+  }
+
 }

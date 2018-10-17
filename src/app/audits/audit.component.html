@@ -14,7 +14,7 @@
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">Unidade</label>
             <div class="col-sm-10">
-              <select [(ngModel)]="audit.units_id" #auditUnit="ngModel" required name="auditUnit" (change)="loadEnviromentsByUnit($event.target.value)"
+              <select [(ngModel)]="audit.units_id" [disabled]="evaluations?.length" #auditUnit="ngModel" required name="auditUnit" (change)="loadEnviromentsByUnit($event.target.value)"
                 class="form-control">
                 <option disabled *ngIf="units?.length == 0">Nenhuma unidade cadastrada.</option>
                 <option *ngFor="let unit of units" [value]="unit.id">
@@ -31,16 +31,15 @@
               <ngx-datatable
               style="width: 90%; heigth: 150"
               class="material"
-              [rows]="enviroments"
+              [rows]="enviromentsList"
               [columnMode]="'force'"
               [headerHeight]="50"
               [footerHeight]="50"
               [rowHeight]="'auto'"
               [limit]="5"
               [selected]="selected"
-              [selectionType]="'checkbox'"
-              (activate)="onActivate($event)"
-              (select)='onSelect($event)'>
+              [messages]="message"
+              [selectionType]="'checkbox'">
               <ngx-datatable-column 
                 [width]="30" 
                 [sortable]="false" 
@@ -58,51 +57,46 @@
                       (change)="onCheckboxChangeFn($event)"/>
                   </ng-template>
                 </ngx-datatable-column>
-                <ngx-datatable-column name="Name"></ngx-datatable-column>
+                <ngx-datatable-column name="Ambientes disponiveis" prop="name"></ngx-datatable-column>
               </ngx-datatable>
             </div>
-
             <div class="form-group col-sm-6">
-              <label class=" col-form-label">Avaliador</label>
               <div class="col-sm-10">
-                <select [(ngModel)]="user_id" #appraiser="ngModel" required name="appraiser" class="form-control">
-                  <option *ngFor="let user of users" [value]="user.id">
+                <label class=" col-form-label">Avaliador</label>
+                <select [(ngModel)]="user_selected" #appraiser="ngModel" required name="appraiser" class="form-control">
+                  <option *ngFor="let user of users; let i = index" [value]="i">
                     {{ user.name }}
-                  </option>
+                  </option> 
                 </select>
                 <span *ngIf="appraiser.invalid && (appraiser.dirty || appraiser.touched)" style='color: red'>Este campo é obrigatório.</span>
-              </div>
+                <button style="margin-top: 10px;" class="btn btn-primary" [disabled]="selected?.length === 0 || user_selected < 0" type="button" (click)="createEvaluation()">Adicionar</button>
+              
 
-              <button class="btn btn-primary" type="button" (click)="createEvaluation()">Adicionar</button>
-
-              <div class='selected-column'>
-                <label class=" col-form-label">Avaliações <small>({{createEvaluations?.length}})</small></label>
-                  <ul>
-                    <li *ngFor='let sel of createEvaluations'>
-                      {{sel.environments_id}} 
-                      {{sel.users_id}}
-                    </li>
-                    <li *ngIf="!createEvaluations?.length">Nenhuma Avaliação</li>
-                  </ul>
+                <div class='selected-column'>
+                  <h5>Avaliações <small>({{evaluations?.length}})</small></h5>
+                  <table style="width:100%">
+                      <tr>
+                        <th>Ambiente</th>
+                        <th>Avaliador</th>
+                        <th></th>
+                      </tr>
+                      <tr *ngFor="let sel of evaluations; let i = index">
+                        <td>{{sel.environment_name}}</td>
+                        <td>{{sel.user_name}}</td>
+                        <td>                    
+                          <button class="btn btn-danger btn-icon no-margin" (click)="removeEvaluation(i)">
+                            <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </table>
+                    <tr *ngIf="!evaluations?.length">
+                      Nenhuma Avaliação                    
+                    </tr>
+                  </div>
                 </div>
             </div>
-
-          </div>
-          
-          <!-- <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Ambiente(s)</label>
-            <div class="col-sm-10">
-              <ng-select 
-                #environments="ngModel"
-                [options]="selectItems"
-                name="selectItems"
-                [multiple]="isMultiple"
-                notFoundMsg="Nenhum ambiente cadastrado."
-                [(ngModel)]="selectedEnviroment"
-                required>
-              </ng-select>
-            </div>
-          </div> -->
+          </div>    
 
           <div class="row" style="margin-top: 30px">
             <label class="col-sm-2 col-form-label">Período</label>

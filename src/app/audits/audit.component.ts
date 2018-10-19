@@ -8,14 +8,15 @@ import { Unit } from '../units/unit';
 import { UserService } from '../users/user.service';
 import * as moment from 'moment';
 import { IOption } from 'ng-select';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { defineLocale, PageChangedEvent } from 'ngx-bootstrap';
 import { ptBrLocale } from 'ngx-bootstrap/locale';
 import swal from 'sweetalert';
 import { NgForm } from '@angular/forms';
 import { UnitService } from '../units/unit.service';
-import { Evaluation } from '../evaluations/evaluation'
+import { Evaluation } from './evaluation'
 import { EvaluationService } from '../evaluations/evaluation.service';
+import { SaveEvaluationDto } from './save-evaluation-dto';
+import { SaveAuditDto } from './save-audit-dto';
 
 @Component({
   selector: 'app-audit',
@@ -23,14 +24,28 @@ import { EvaluationService } from '../evaluations/evaluation.service';
 })
 
 export class AuditComponent implements OnInit {
-  isMultiple: boolean = true;
+  
+  message = {
+   emptyMessage: 'Nenhum ambiente disponivel',
+   totalMessage: 'Total',
+   selectedMessage: 'Selecionados'
+  }
+  
   audit: Audit = new Audit();
-  audits: Audit[];
-  period: Date[];
-  users: User[];
+  saveAudit: SaveAuditDto;
+  evaluations = new Array<Evaluation>();
   enviroments: Enviroment[];
+  enviromentsList: Enviroment[];
+  
+  users: User[];
+  user_selected: number = -1;
+  
+  selected = [];
+
+  isMultiple: boolean = true;
+  audits: Audit[] = new Array<Audit>();
+  period: Date[];
   units: Unit[];
-  evaluation: Evaluation = new Evaluation();
   selectItems: Array<IOption> ;
   selectedEnviroment: Array<string> = [];
 
@@ -46,6 +61,10 @@ export class AuditComponent implements OnInit {
     private _unitService: UnitService) {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
+
+    this.fetch((data) => {
+      this.rows = data;
+    });
   }
 
   ngOnInit() {
@@ -56,6 +75,36 @@ export class AuditComponent implements OnInit {
     this.load();
   }
 
+  /**
+   * Adiciona a lista de avaliações e remove o ambiente da lista de ambientes
+   */
+  createEvaluation(){
+    this.selected.forEach((environment) => {
+      this.evaluations.push(new Evaluation(environment.id, 
+                                           environment.name, 
+                                           this.users[this.user_selected].id, 
+                                           this.users[this.user_selected].name));
+      this.enviromentsList = this.enviromentsList.filter( env => env != environment);
+      this.selected = [];
+    });
+    this.user_selected = -1;
+  }
+
+  /**
+   * Remove a avaliação e adiciona o ambiente da avaliação excluida a lista de ambientes disponiveis
+   * @param i index no array
+   */
+  removeEvaluation(i: number){
+    const env = this.enviroments.find(env => env.id === this.evaluations[i].environment_id);
+    this.enviromentsList.push(new Enviroment(env.id,env.block, 
+                                             env.description, 
+                                             env.name, 
+                                             env.enviroment_types_id, 
+                                             env.units_id, 
+                                             env.users_id));
+    this.enviromentsList = this.enviromentsList.filter(x => x != null);
+    this.evaluations.splice(i,1);
+  }
   findAudits(typed: string) {
     this.auditFiltered = this.audits.filter(
       audit => audit.title.toLowerCase().includes(typed.toLowerCase()));
@@ -80,10 +129,8 @@ export class AuditComponent implements OnInit {
       this._enviromentService.loadEnviromentsByUnit(unitId)
         .subscribe(enviroments => {
           this.enviroments = enviroments;
-          this.selectItems = enviroments
-            .map(({ id, name }) => (
-              { label: name, value: id.toString() }));
-      })
+          this.enviromentsList = enviroments;
+      });
    }
 
   loadUsers() {
@@ -108,27 +155,35 @@ export class AuditComponent implements OnInit {
       user.profile == 7);   
   }
 
-  save(audit) {
-    this.evaluation.enviroments_id = this.selectedEnviroment;
+  save(audit: Audit) {
+  //  this.evaluation.enviroments_id = this.selectedEnviroment;
     audit.initial_date = this.period[0];
     audit.due_date = this.period[1];
-    this.audit.status = this.checkStatus(audit);
-    audit.evaluations = this.evaluation;
+   // this.audit.status = this.checkStatus(audit);
+    audit.evaluations = this.evaluations;
+   this.saveAudit = this.mapperSaveAudit(audit);
+   // TODO:Remover
+   audit.unit_name = 'rever aqui';
+   this.audits.push(audit);
+   this.audits = this.audits.filter(x => x != null);
     if(!audit.id){
-      this.auditService.save(audit)
+      this.auditService.save(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
-          audit.id = res['auditId'];
-          this._evaluationService.save(audit)
+          this.saveAudit.id = res['auditId'];
+              this.saveAudit.evaluations.forEach( env => {
+                env.audits_id = this.saveAudit.id;
+              })
+          this._evaluationService.save(this.saveAudit)
           .subscribe(res => {
-            console.log(res);
+            this.enviromentsList = [];
           })
           this.auditForm.reset();
           this.load();
         })
     } else {
-      if(audit.status != "CONCLUIDA") {
-        this.auditService.update(audit)
+      if(audit.status != 1) {
+        this.auditService.update(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
           this.auditForm.reset();
@@ -139,7 +194,7 @@ export class AuditComponent implements OnInit {
   }
 
   update(audit: Audit): void {
-    this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
+  /*  this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
     this.selectedEnviroment = [];
     if(audit.status != "CONCLUIDA"){  
       this.evaluation.users_id = audit.users_id; 
@@ -150,7 +205,26 @@ export class AuditComponent implements OnInit {
       this.audit = audit;
       this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
-    }
+    }*/
+  }
+
+  mapperSaveAudit(audit: Audit): SaveAuditDto{
+    let evaluations = new Array<SaveEvaluationDto>();
+    this.evaluations.forEach( env => {
+      evaluations.push(this.mapperSaveEvaluation(env));
+    })
+    return new SaveAuditDto(audit.title, 
+                            audit.unit_id, 
+                            evaluations,
+                            audit.initial_date,
+                            audit.due_date,
+                            audit.description,
+                            0,
+                            audit.id)
+  }
+
+  mapperSaveEvaluation(evaluation: Evaluation): SaveEvaluationDto{
+    return new SaveEvaluationDto(evaluation.id, evaluation.id, evaluation.environment_id, evaluation.user_id);
   }
 
   getValidation(res) {
@@ -178,14 +252,14 @@ export class AuditComponent implements OnInit {
   pageChanged(event: PageChangedEvent): void {
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
-    this.auditFiltered = this.audits.slice(startItem, endItem);
+   // this.auditFiltered = this.audits.slice(startItem, endItem);
   }
 
   remove(id: number): void {
     this.auditService.remove(id)
     .subscribe((res) => {
       this.getValidation(res);
-      this.load();
+     // this.load();
       this.auditForm.reset();
     },
       error => {
@@ -195,7 +269,43 @@ export class AuditComponent implements OnInit {
   }
 
   checkStatus(audit: Audit): string {
-    return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
-      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";
+    /*return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
+      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";*/
+      return null;
   }
+
+  @ViewChild('myTable') table: any;
+
+  rows: any[] = [];
+  expanded: any = {};
+  timeout: any;
+
+
+  onPage(event) {
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      console.log('paged!', event);
+    }, 100);
+  }
+
+  fetch(cb) {
+    const req = new XMLHttpRequest();
+    req.open('GET', `assets/data/100k.json`);
+
+    req.onload = () => {
+      cb(JSON.parse(req.response));
+    };
+
+    req.send();
+  }
+
+  toggleExpandRow(row) {
+    console.log('Toggled Expand Row!', row);
+    this.table.rowDetail.toggleExpandRow(row);
+  }
+
+  onDetailToggle(event) {
+    console.log('Detail Toggled', event);
+  }
+
 }

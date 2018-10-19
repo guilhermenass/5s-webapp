@@ -29,6 +29,10 @@ File: style.css
       Custom css start
 ==========================  **/
 
+@import '~@swimlane/ngx-datatable/release/index.css';
+@import '~@swimlane/ngx-datatable/release/themes/material.css';
+@import '~@swimlane/ngx-datatable/release/assets/icons.css';
+
 body {
   background-color: #f3f3f3;
   font-size: 0.875em;

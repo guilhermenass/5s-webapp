@@ -28,9 +28,9 @@ export class DashboardComponent implements OnInit {
   findAuditStatus(audits: Audit[]){
 
     audits.forEach(audit =>{
-      if(audit.status.includes('CONCLUIDA')){
+      if(audit.status === 1){
         this.concluded.push(audit);
-      }else if(audit.status == "ATRASADA" ){
+      }else if(audit.status === 0){
         this.late.push(audit)
       } else {
         this.outstanding.push(audit);

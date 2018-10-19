@@ -7,6 +7,7 @@ import { AuditRoutes } from './audit.routing';
 import { SharedModule } from '../shared/shared.module';
 import { BrMasker4Module } from 'brmasker4';
 import { SelectModule } from 'ng-select';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { SelectModule } from 'ng-select';
     SharedModule,
     BsDatepickerModule.forRoot(),
     BrMasker4Module,
-    SelectModule
+    SelectModule,
+    NgxDatatableModule
   ],
   declarations: [AuditComponent]
 })

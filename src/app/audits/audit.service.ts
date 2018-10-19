@@ -1,12 +1,12 @@
-import { Injectable, OnInit } from '@angular/core';
-import { Http, Response, Headers, URLSearchParams, RequestOptions } from '@angular/http';
+import { Injectable} from '@angular/core';
+import { Response } from '@angular/http';
 import { Observable } from 'rxjs';
-import { of } from 'rxjs';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Audit } from './audit';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { SaveAuditDto } from './save-audit-dto';
 
 @Injectable()
 
@@ -18,7 +18,7 @@ export class AuditService {
        this.url = `${environment.apiUrl}/audits`;
     }
 
-   save(audit: Audit) {
+   save(audit: SaveAuditDto) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json'
@@ -27,7 +27,7 @@ export class AuditService {
       return this.http.post(this.url, audit);
     }
 
-    update(audit: Audit) {
+    update(audit: SaveAuditDto) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json'

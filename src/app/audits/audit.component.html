@@ -138,7 +138,7 @@
           [rows]='audits'
           (page)="onPage($event)">
           <!-- Row Detail Template -->
-          <ngx-datatable-row-detail [rowHeight]="auto" #myDetailRow (toggle)="onDetailToggle($event)">
+          <ngx-datatable-row-detail #myDetailRow (toggle)="onDetailToggle($event)">
             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
               <div style="padding-left:35px">
                   <div class="table-responsive">

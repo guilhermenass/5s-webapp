@@ -214,7 +214,7 @@ export class AuditComponent implements OnInit {
       evaluations.push(this.mapperSaveEvaluation(env));
     })
     return new SaveAuditDto(audit.title, 
-                            audit.unit_id, 
+                            audit.units_id, 
                             evaluations,
                             audit.initial_date,
                             audit.due_date,

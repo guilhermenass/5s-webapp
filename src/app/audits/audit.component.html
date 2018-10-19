@@ -118,7 +118,7 @@
             </div>
           </div>
 
-          <button class="btn btn-primary pull-right no-margin-right" [disabled]="!auditForm.valid" type="button" (click)="save(audit);">Salvar</button>
+          <button class="btn btn-primary pull-right no-margin-right" [disabled]="!auditForm.valid || !evaluations?.length" type="submit">Salvar</button>
         </form>
       </app-card>
 
@@ -138,9 +138,9 @@
           [rows]='audits'
           (page)="onPage($event)">
           <!-- Row Detail Template -->
-          <ngx-datatable-row-detail [rowHeight]="100" #myDetailRow (toggle)="onDetailToggle($event)">
+          <ngx-datatable-row-detail [rowHeight]="auto" #myDetailRow (toggle)="onDetailToggle($event)">
             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
-              <div style="padding-left:35px; width:100px;">
+              <div style="padding-left:35px">
                   <div class="table-responsive">
                       <table class="table table--clean">
                         <thead>
@@ -151,8 +151,8 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let evaluate of row.evaluations">
-                            <td>{{evaluate.user_name}}</td> 
                             <td>{{evaluate.environment_name}}</td>
+                            <td>{{evaluate.user_name}}</td> 
                           </tr>
                         </tbody>
                       </table>

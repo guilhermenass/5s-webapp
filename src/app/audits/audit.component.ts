@@ -72,7 +72,7 @@ export class AuditComponent implements OnInit {
     moment.locale('pt-br');
     this.loadUsers();
     this.loadUnits();
-  //  this.load();
+    this.load();
   }
 
   /**
@@ -86,8 +86,8 @@ export class AuditComponent implements OnInit {
                                            this.users[this.user_selected].name));
       this.enviromentsList = this.enviromentsList.filter( env => env != environment);
       this.selected = [];
-      this.user_selected = -1;
     });
+    this.user_selected = -1;
   }
 
   /**
@@ -111,7 +111,7 @@ export class AuditComponent implements OnInit {
     this.lengthAuditsPagination = this.auditFiltered.length
   }
 
-  /*load() {
+  load() {
     this.auditService.load()
       .subscribe(
         audits => {
@@ -123,7 +123,7 @@ export class AuditComponent implements OnInit {
           console.log(error)
         },
     );
-  }*/
+  }
 
    loadEnviromentsByUnit(unitId) {
       this._enviromentService.loadEnviromentsByUnit(unitId)
@@ -166,14 +166,17 @@ export class AuditComponent implements OnInit {
    audit.unit_name = 'rever aqui';
    this.audits.push(audit);
    this.audits = this.audits.filter(x => x != null);
-   /* if(!audit.id){
+    if(!audit.id){
       this.auditService.save(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
-          audit.id = res['auditId'];
-          this._evaluationService.save(audit)
+          this.saveAudit.id = res['auditId'];
+              this.saveAudit.evaluations.forEach( env => {
+                env.audits_id = this.saveAudit.id;
+              })
+          this._evaluationService.save(this.saveAudit)
           .subscribe(res => {
-            console.log(res);
+            this.enviromentsList = [];
           })
           this.auditForm.reset();
           this.load();
@@ -187,7 +190,7 @@ export class AuditComponent implements OnInit {
           this.load();
         })
       }
-    }*/
+    }
   }
 
   update(audit: Audit): void {
@@ -221,7 +224,7 @@ export class AuditComponent implements OnInit {
   }
 
   mapperSaveEvaluation(evaluation: Evaluation): SaveEvaluationDto{
-    return new SaveEvaluationDto(evaluation.id, evaluation.environment_id, evaluation.user_id);
+    return new SaveEvaluationDto(evaluation.id, evaluation.id, evaluation.environment_id, evaluation.user_id);
   }
 
   getValidation(res) {

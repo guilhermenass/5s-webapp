@@ -130,12 +130,12 @@
 
           <ngx-datatable
           #myTable
-          class='material expandable'
+          class="material expandable"
           [columnMode]="'force'"
           [rowHeight]="50"
           [limit]="10"
           [scrollbarV]="false"
-          [rows]='audits'
+          [rows]="audits"
           (page)="onPage($event)">
           <!-- Row Detail Template -->
           <ngx-datatable-row-detail #myDetailRow (toggle)="onDetailToggle($event)">
@@ -184,54 +184,22 @@
           <ngx-datatable-column name="Data Final" prop="due_date"></ngx-datatable-column>
           <ngx-datatable-column name="Descrição" prop="description"></ngx-datatable-column>
           <ngx-datatable-column name="Status" prop="status"></ngx-datatable-column>
-        </ngx-datatable>
-        <!-- <div class="row">
-          <h4 class="col-sm-2">Pesquisar: </h4>
-          <input class="form-control col-sm-10" #auditSearch placeholder="Pesquise por uma auditoria" (keyup)="findAudits(auditSearch.value)">
-        </div>
-        <div class="table-responsive">
-          <table *ngIf="audits?.length > 0; else noAudits" class="table table--clean">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Avaliador</th>
-                <th>Ambiente(s)</th>
-                <th>Status</th>
-                <th>Data Inicial</th>
-                <th>Data Final</th>
-                <th>Descrição</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
+          <ngx-datatable-column name="Status" prop="status">
+            <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
+              <span class="inline-block">
+                <button class="btn btn-info btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="update(row)">
+                  <i class="icofont icofont-edit" title="Você não pode editar uma auditoria concluida"></i>
+                </button>
+              </span>
+              <span class="inline-block margin-left-10">
+                <button class="btn btn-danger btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="getModalAnswer(row.id)">
+                  <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
+                </button>
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
 
-            <tbody>
-              <tr *ngFor="let audit of auditFiltered">
-                <td>{{audit.title}}</td>
-                <td>{{audit.user_name}}</td>
-                <td>{{audit.enviroment_name}}</td>
-                <td>{{audit.status == 0 ? 'Pendente' : 'Concluída'}}</td>
-                <td>{{audit.initial_date | date: 'dd/MM/yyyy' }}</td>
-                <td>{{audit.due_date | date: 'dd/MM/yyyy' }}</td>
-                <td>{{audit.description}}</td>
-                <td> 
-                  <span class="inline-block">
-                    <button class="btn btn-info btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="update(audit)">
-                      <i class="icofont icofont-edit" title="Você não pode editar uma auditoria concluida"></i>
-                    </button>
-                  </span>
-                  <span class="inline-block margin-left-10">
-                    <button class="btn btn-danger btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="getModalAnswer(audit.id)">
-                      <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
-                    </button>
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="noContents" *ngIf="lengthAuditsPagination > 10">
-            <pagination [totalItems]="lengthAuditsPagination" (pageChanged)="pageChanged($event)"></pagination>
-          </div>
-        </div> -->
+        </ngx-datatable>
       </app-card>
     </div>
   </div>

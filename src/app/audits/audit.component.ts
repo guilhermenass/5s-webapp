@@ -62,9 +62,6 @@ export class AuditComponent implements OnInit {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
 
-    this.fetch((data) => {
-      this.rows = data;
-    });
   }
 
   ngOnInit() {
@@ -79,11 +76,16 @@ export class AuditComponent implements OnInit {
    * Adiciona a lista de avaliações e remove o ambiente da lista de ambientes
    */
   createEvaluation(){
-    this.selected.forEach((environment) => {
-      this.evaluations.push(new Evaluation(environment.id, 
-                                           environment.name, 
-                                           this.users[this.user_selected].id, 
-                                           this.users[this.user_selected].name));
+    this.selected.forEach((environment : Enviroment) => {
+      this.evaluations.push(new Evaluation(new Enviroment(environment.id, 
+                                                          environment.block, 
+                                                          environment.description,
+                                                          environment.name,
+                                                          environment.enviroment_types_id,
+                                                          environment.units_id,
+                                                          environment.users_id), 
+                                           new User(this.users[this.user_selected].id, 
+                                           this.users[this.user_selected].name)));
       this.enviromentsList = this.enviromentsList.filter( env => env != environment);
       this.selected = [];
     });
@@ -95,7 +97,7 @@ export class AuditComponent implements OnInit {
    * @param i index no array
    */
   removeEvaluation(i: number){
-    const env = this.enviroments.find(env => env.id === this.evaluations[i].environment_id);
+    const env = this.enviroments.find(env => env.id === this.evaluations[i].Enviroment.id);
     this.enviromentsList.push(new Enviroment(env.id,env.block, 
                                              env.description, 
                                              env.name, 
@@ -115,7 +117,20 @@ export class AuditComponent implements OnInit {
     this.auditService.load()
       .subscribe(
         audits => {
-          this.audits = audits;
+          console.log('retorno do banco', audits)
+          //this.audits = audits;
+          audits.forEach(audit => {
+            this.audits.push(new Audit(audit.title, 
+                                       audit.Evaluations[0].Enviroment.Unit, 
+                                       audit.Evaluations,
+                                       audit.initial_date,
+                                       audit.due_date,
+                                       audit.description,
+                                       audit.status,
+                                       audit.id));
+          });
+          this.audits = this.audits.filter(x => x != null);
+          console.log('no componente', this.audits);
           this.auditFiltered = this.audits.slice(0, 10);
           this.lengthAuditsPagination = this.audits.length;
         },
@@ -162,8 +177,6 @@ export class AuditComponent implements OnInit {
    // this.audit.status = this.checkStatus(audit);
     audit.evaluations = this.evaluations;
    this.saveAudit = this.mapperSaveAudit(audit);
-   // TODO:Remover
-   audit.unit_name = 'rever aqui';
    this.audits.push(audit);
    this.audits = this.audits.filter(x => x != null);
     if(!audit.id){
@@ -200,9 +213,9 @@ export class AuditComponent implements OnInit {
       this.audit = audit;
       this.evaluations = audit.evaluations;
       //this.evaluation.users_id = audit.users_id; 
-      this.audit.unit_id  = audit.unit_id;
+      this.audit.unit.id  = audit.unit.id;
       //moment.locale('pt-BR');
-      this.loadEnviromentsByUnit(audit.unit_id);
+      this.loadEnviromentsByUnit(audit.unit.id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
       this.audit = audit;
      //this.selectedEnviroment.push(this.audit.enviroments_id.toString());
@@ -216,7 +229,7 @@ export class AuditComponent implements OnInit {
       evaluations.push(this.mapperSaveEvaluation(env));
     })
     return new SaveAuditDto(audit.title, 
-                            audit.unit_id, 
+                            audit.unit.id, 
                             evaluations,
                             audit.initial_date,
                             audit.due_date,
@@ -226,7 +239,7 @@ export class AuditComponent implements OnInit {
   }
 
   mapperSaveEvaluation(evaluation: Evaluation): SaveEvaluationDto{
-    return new SaveEvaluationDto(evaluation.id, evaluation.id, evaluation.environment_id, evaluation.user_id);
+    return new SaveEvaluationDto(evaluation.id, evaluation.id, evaluation.Enviroment.id, evaluation.User.id);
   }
 
   getValidation(res) {
@@ -261,7 +274,7 @@ export class AuditComponent implements OnInit {
     this.auditService.remove(id)
     .subscribe((res) => {
       this.getValidation(res);
-     // this.load();
+      this.load();
       this.auditForm.reset();
     },
       error => {
@@ -288,17 +301,6 @@ export class AuditComponent implements OnInit {
     this.timeout = setTimeout(() => {
       console.log('paged!', event);
     }, 100);
-  }
-
-  fetch(cb) {
-    const req = new XMLHttpRequest();
-    req.open('GET', `assets/data/100k.json`);
-
-    req.onload = () => {
-      cb(JSON.parse(req.response));
-    };
-
-    req.send();
   }
 
   toggleExpandRow(row) {

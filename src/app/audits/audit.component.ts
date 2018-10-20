@@ -174,11 +174,12 @@ export class AuditComponent implements OnInit {
   //  this.evaluation.enviroments_id = this.selectedEnviroment;
     audit.initial_date = this.period[0];
     audit.due_date = this.period[1];
-   // this.audit.status = this.checkStatus(audit);
+    
     audit.evaluations = this.evaluations;
    this.saveAudit = this.mapperSaveAudit(audit);
    this.audits = this.audits.filter(x => x != null);
     if(!audit.id){
+      audit.status = 0;
       this.auditService.save(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
@@ -194,28 +195,23 @@ export class AuditComponent implements OnInit {
           this.load();
         })
     } else {
-      if(audit.status != 1) {
-        this.auditService.update(this.saveAudit)
-        .subscribe(res => {
-          this.getValidation(res);
-          this.auditForm.reset();
-            this.saveAudit.evaluations.forEach( env => {
-              env.audits_id = this.saveAudit.id;
-            });
-          this._evaluationService.save(this.saveAudit)
-            .subscribe(res => {
-              this.enviromentsList = [];
-            });
-          this.load();
-        })
-      }
+      this.auditService.update(this.saveAudit)
+      .subscribe(res => {
+        this.getValidation(res);
+        this.auditForm.reset();
+          this.saveAudit.evaluations.forEach( env => {
+            env.audits_id = this.saveAudit.id;
+          });
+        this._evaluationService.save(this.saveAudit)
+          .subscribe(res => {
+            this.enviromentsList = [];
+          });
+        this.load();
+      });
     }
   }
 
   update(audit: Audit): void {
-  //  this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
-  //  this.selectedEnviroment = [];
-    if(audit.status != 1){  
       this.audit = audit;
       this.evaluations = audit.evaluations;
       //this.evaluation.users_id = audit.users_id; 
@@ -226,7 +222,6 @@ export class AuditComponent implements OnInit {
       this.audit = audit;
      //this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
-    }
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{
@@ -235,7 +230,7 @@ export class AuditComponent implements OnInit {
       evaluations.push(this.mapperSaveEvaluation(env));
     })
     return new SaveAuditDto(audit.title, 
-                            audit.unit.id, 
+                            audit.unit_id, 
                             evaluations,
                             audit.initial_date,
                             audit.due_date,
@@ -287,12 +282,6 @@ export class AuditComponent implements OnInit {
         this.getValidation(error.error)
       }
     );
-  }
-
-  checkStatus(audit: Audit): string {
-    /*return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
-      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";*/
-      return null;
   }
 
   @ViewChild('myTable') table: any;

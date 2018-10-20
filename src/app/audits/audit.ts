@@ -26,9 +26,9 @@ export class Audit {
         this.due_date = due_date;
         this.description = description;
         this.status = status;
-        if(status == 1){
+        if(status == 2){
             this.status_name = 'Concluída';
-        } else if(status == 0 && new Date() < new Date(due_date)) {
+        } else if(new Date() < new Date(due_date)) {
             this.status_name = 'Pendente';
         } else {
             this.status_name = 'Atrasada';

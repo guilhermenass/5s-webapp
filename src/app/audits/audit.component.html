@@ -186,12 +186,12 @@
           <ngx-datatable-column name="Ações">
             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
               <span class="inline-block">
-                <button class="btn btn-info btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="update(row)">
+                <button class="btn btn-info btn-icon no-margin" [disabled]="audit.status === 2" (click)="update(row)">
                   <i class="icofont icofont-edit" title="Você não pode editar uma auditoria concluida"></i>
                 </button>
               </span>
               <span class="inline-block margin-left-10">
-                <button class="btn btn-danger btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="getModalAnswer(row.id)">
+                <button class="btn btn-danger btn-icon no-margin" [disabled]="audit.status === 2" (click)="getModalAnswer(row.id)">
                   <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
                 </button>
               </span>

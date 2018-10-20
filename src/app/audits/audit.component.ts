@@ -114,11 +114,11 @@ export class AuditComponent implements OnInit {
   }
 
   load() {
+    this.audits = [];
     this.auditService.load()
       .subscribe(
         audits => {
           console.log('retorno do banco', audits)
-          //this.audits = audits;
           audits.forEach(audit => {
             this.audits.push(new Audit(audit.title, 
                                        audit.Evaluations[0].Enviroment.Unit, 
@@ -177,20 +177,19 @@ export class AuditComponent implements OnInit {
    // this.audit.status = this.checkStatus(audit);
     audit.evaluations = this.evaluations;
    this.saveAudit = this.mapperSaveAudit(audit);
-   this.audits.push(audit);
    this.audits = this.audits.filter(x => x != null);
     if(!audit.id){
       this.auditService.save(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
           this.saveAudit.id = res['auditId'];
-              this.saveAudit.evaluations.forEach( env => {
-                env.audits_id = this.saveAudit.id;
-              })
+            this.saveAudit.evaluations.forEach( env => {
+              env.audits_id = this.saveAudit.id;
+            });
           this._evaluationService.save(this.saveAudit)
-          .subscribe(res => {
-            this.enviromentsList = [];
-          })
+            .subscribe(res => {
+              this.enviromentsList = [];
+            });
           this.auditForm.reset();
           this.load();
         })
@@ -200,6 +199,13 @@ export class AuditComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.auditForm.reset();
+            this.saveAudit.evaluations.forEach( env => {
+              env.audits_id = this.saveAudit.id;
+            });
+          this._evaluationService.save(this.saveAudit)
+            .subscribe(res => {
+              this.enviromentsList = [];
+            });
           this.load();
         })
       }

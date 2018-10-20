@@ -194,18 +194,20 @@ export class AuditComponent implements OnInit {
   }
 
   update(audit: Audit): void {
-  /*  this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
-    this.selectedEnviroment = [];
-    if(audit.status != "CONCLUIDA"){  
-      this.evaluation.users_id = audit.users_id; 
-      audit.units_id  = audit.units_id;
-      moment.locale('pt-BR');
-      this.loadEnviromentsByUnit(audit.units_id);
+  //  this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
+  //  this.selectedEnviroment = [];
+    if(audit.status != 1){  
+      this.audit = audit;
+      this.evaluations = audit.evaluations;
+      //this.evaluation.users_id = audit.users_id; 
+      this.audit.unit_id  = audit.unit_id;
+      //moment.locale('pt-BR');
+      this.loadEnviromentsByUnit(audit.unit_id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
       this.audit = audit;
-      this.selectedEnviroment.push(this.audit.enviroments_id.toString());
+     //this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
-    }*/
+    }
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{

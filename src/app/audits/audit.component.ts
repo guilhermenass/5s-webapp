@@ -184,12 +184,13 @@ export class AuditComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.saveAudit.id = res['auditId'];
-            this.saveAudit.evaluations.forEach( env => {
-              env.audits_id = this.saveAudit.id;
-            });
+          this.saveAudit.evaluations.forEach( env => {
+            env.audits_id = this.saveAudit.id;
+          });
           this._evaluationService.save(this.saveAudit)
             .subscribe(res => {
               this.enviromentsList = [];
+
             });
           this.auditForm.reset();
           this.load();
@@ -230,7 +231,7 @@ export class AuditComponent implements OnInit {
       evaluations.push(this.mapperSaveEvaluation(env));
     })
     return new SaveAuditDto(audit.title, 
-                            audit.units_id, 
+                            audit.unit_id, 
                             evaluations,
                             audit.initial_date,
                             audit.due_date,

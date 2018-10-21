@@ -14,7 +14,7 @@
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">Unidade</label>
             <div class="col-sm-10">
-              <select [(ngModel)]="audit.units_id" [disabled]="evaluations?.length" #auditUnit="ngModel" required name="auditUnit" (change)="loadEnviromentsByUnit($event.target.value)"
+              <select [(ngModel)]="audit.unit_id" [disabled]="evaluations?.length" #auditUnit="ngModel" required name="auditUnit" (change)="loadEnviromentsByUnit($event.target.value)"
                 class="form-control">
                 <option disabled *ngIf="units?.length == 0">Nenhuma unidade cadastrada.</option>
                 <option *ngFor="let unit of units" [value]="unit.id">
@@ -81,8 +81,8 @@
                         <th></th>
                       </tr>
                       <tr *ngFor="let sel of evaluations; let i = index">
-                        <td>{{sel.environment_name}}</td>
-                        <td>{{sel.user_name}}</td>
+                        <td>{{sel.Enviroment.name}}</td>
+                        <td>{{sel.User.name}}</td>
                         <td>                    
                           <button class="btn btn-danger btn-icon no-margin" (click)="removeEvaluation(i)">
                             <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
@@ -127,13 +127,13 @@
       </ng-template>
 
       <app-card [title]="'Listagem de Auditorias'">
-
           <ngx-datatable
           #myTable
           class="material expandable"
           [columnMode]="'force'"
           [rowHeight]="50"
           [limit]="10"
+          [headerHeight]="50"
           [scrollbarV]="false"
           [rows]="audits"
           (page)="onPage($event)">
@@ -151,8 +151,8 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let evaluate of row.evaluations">
-                            <td>{{evaluate.environment_name}}</td>
-                            <td>{{evaluate.user_name}}</td> 
+                            <td>{{evaluate.Enviroment.name}}</td>
+                            <td>{{evaluate.User.name}}</td> 
                           </tr>
                         </tbody>
                       </table>
@@ -165,7 +165,6 @@
            <ngx-datatable-column
             [width]="50"
             [resizeable]="false"
-            [sortable]="false"
             [draggable]="false"
             [canAutoResize]="false">
             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
@@ -179,20 +178,20 @@
             </ng-template>
           </ngx-datatable-column>
           <ngx-datatable-column name="Auditoria" prop="title"></ngx-datatable-column>
-          <ngx-datatable-column name="Unidade" prop="unit_name"></ngx-datatable-column>
+          <ngx-datatable-column name="Unidade" prop="unit.name"></ngx-datatable-column>
           <ngx-datatable-column name="Data Inicial" prop="initial_date"> </ngx-datatable-column>
           <ngx-datatable-column name="Data Final" prop="due_date"></ngx-datatable-column>
           <ngx-datatable-column name="Descrição" prop="description"></ngx-datatable-column>
-          <ngx-datatable-column name="Status" prop="status"></ngx-datatable-column>
-          <ngx-datatable-column name="Status" prop="status">
+          <ngx-datatable-column name="Status" prop="status_name"></ngx-datatable-column>
+          <ngx-datatable-column name="Ações">
             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
               <span class="inline-block">
-                <button class="btn btn-info btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="update(row)">
+                <button class="btn btn-info btn-icon no-margin" [disabled]="audit.status === 2" (click)="update(row)">
                   <i class="icofont icofont-edit" title="Você não pode editar uma auditoria concluida"></i>
                 </button>
               </span>
               <span class="inline-block margin-left-10">
-                <button class="btn btn-danger btn-icon no-margin" [disabled]="audit.status === 'CONCLUIDA'" (click)="getModalAnswer(row.id)">
+                <button class="btn btn-danger btn-icon no-margin" [disabled]="audit.status === 2" (click)="getModalAnswer(row.id)">
                   <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
                 </button>
               </span>

@@ -51,7 +51,7 @@
     "ng-click-outside": "^2.4.1",
     "ng-select": "^1.0.0",
     "ng2-datepicker": "^2.3.1",
-    "ngx-bootstrap": "^2.0.5",
+    "ngx-bootstrap": "^3.0.1",
     "raphael": "^2.2.7",
     "remove-webpack-plugin": "^1.2.2",
     "rxjs": "^6.2.2",

@@ -123,7 +123,7 @@ export class QuestionComponent implements OnInit {
 
   saveInAssociateTable(questionId, enviromentTypeId): void {
     this._questionService.saveInAssociateTable(questionId, enviromentTypeId)
-      .subscribe(res => {console.log(res)});
+      .subscribe(() => {});
   }
 
   update(question: Question): void {

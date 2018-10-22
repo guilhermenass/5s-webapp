@@ -30,6 +30,10 @@ export class AuditComponent implements OnInit {
    totalMessage: 'Total',
    selectedMessage: 'Selecionados'
   }
+
+  messageAuditsGrid = {
+    emptyMessage: 'Nenhuma auditoria cadastrada',
+   }
   
   audit: Audit = new Audit();
   saveAudit: SaveAuditDto;
@@ -62,9 +66,6 @@ export class AuditComponent implements OnInit {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
 
-    this.fetch((data) => {
-      this.rows = data;
-    });
   }
 
   ngOnInit() {
@@ -79,11 +80,16 @@ export class AuditComponent implements OnInit {
    * Adiciona a lista de avaliações e remove o ambiente da lista de ambientes
    */
   createEvaluation(){
-    this.selected.forEach((environment) => {
-      this.evaluations.push(new Evaluation(environment.id, 
-                                           environment.name, 
-                                           this.users[this.user_selected].id, 
-                                           this.users[this.user_selected].name));
+    this.selected.forEach((environment : Enviroment) => {
+      this.evaluations.push(new Evaluation(new Enviroment(environment.id, 
+                                                          environment.block, 
+                                                          environment.description,
+                                                          environment.name,
+                                                          environment.enviroment_types_id,
+                                                          environment.units_id,
+                                                          environment.users_id), 
+                                           new User(this.users[this.user_selected].id, 
+                                           this.users[this.user_selected].name)));
       this.enviromentsList = this.enviromentsList.filter( env => env != environment);
       this.selected = [];
     });
@@ -95,7 +101,7 @@ export class AuditComponent implements OnInit {
    * @param i index no array
    */
   removeEvaluation(i: number){
-    const env = this.enviroments.find(env => env.id === this.evaluations[i].environment_id);
+    const env = this.enviroments.find(env => env.id === this.evaluations[i].Enviroment.id);
     this.enviromentsList.push(new Enviroment(env.id,env.block, 
                                              env.description, 
                                              env.name, 
@@ -112,10 +118,23 @@ export class AuditComponent implements OnInit {
   }
 
   load() {
+    this.audits = [];
     this.auditService.load()
       .subscribe(
         audits => {
-          this.audits = audits;
+          console.log('retorno do banco', audits)
+          audits.forEach(audit => {
+            this.audits.push(new Audit(audit.title, 
+                                       audit.Evaluations[0].Enviroment.Unit, 
+                                       audit.Evaluations,
+                                       audit.initial_date,
+                                       audit.due_date,
+                                       audit.description,
+                                       audit.status,
+                                       audit.id));
+          });
+          this.audits = this.audits.filter(x => x != null);
+          console.log('no componente', this.audits);
           this.auditFiltered = this.audits.slice(0, 10);
           this.lengthAuditsPagination = this.audits.length;
         },
@@ -159,53 +178,55 @@ export class AuditComponent implements OnInit {
   //  this.evaluation.enviroments_id = this.selectedEnviroment;
     audit.initial_date = this.period[0];
     audit.due_date = this.period[1];
-   // this.audit.status = this.checkStatus(audit);
+    
     audit.evaluations = this.evaluations;
    this.saveAudit = this.mapperSaveAudit(audit);
-   // TODO:Remover
-   audit.unit_name = 'rever aqui';
-   this.audits.push(audit);
    this.audits = this.audits.filter(x => x != null);
     if(!audit.id){
+      audit.status = 0;
       this.auditService.save(this.saveAudit)
         .subscribe(res => {
           this.getValidation(res);
           this.saveAudit.id = res['auditId'];
-              this.saveAudit.evaluations.forEach( env => {
-                env.audits_id = this.saveAudit.id;
-              })
+          this.saveAudit.evaluations.forEach( env => {
+            env.audits_id = this.saveAudit.id;
+          });
           this._evaluationService.save(this.saveAudit)
-          .subscribe(res => {
-            this.enviromentsList = [];
-          })
+            .subscribe(res => {
+              this.enviromentsList = [];
+
+            });
           this.auditForm.reset();
           this.load();
         })
     } else {
-      if(audit.status != 1) {
-        this.auditService.update(this.saveAudit)
-        .subscribe(res => {
-          this.getValidation(res);
-          this.auditForm.reset();
-          this.load();
-        })
-      }
+      this.auditService.update(this.saveAudit)
+      .subscribe(res => {
+        this.getValidation(res);
+        this.auditForm.reset();
+          this.saveAudit.evaluations.forEach( env => {
+            env.audits_id = this.saveAudit.id;
+          });
+        this._evaluationService.save(this.saveAudit)
+          .subscribe(res => {
+            this.enviromentsList = [];
+          });
+        this.load();
+      });
     }
   }
 
   update(audit: Audit): void {
-  /*  this.isMultiple = false; // em modo edição, o usuário não pode selecionar multiplos ambientes
-    this.selectedEnviroment = [];
-    if(audit.status != "CONCLUIDA"){  
-      this.evaluation.users_id = audit.users_id; 
-      audit.units_id  = audit.units_id;
-      moment.locale('pt-BR');
-      this.loadEnviromentsByUnit(audit.units_id);
+      this.audit = audit;
+      this.evaluations = audit.evaluations;
+      //this.evaluation.users_id = audit.users_id; 
+      this.audit.unit.id  = audit.unit.id;
+      //moment.locale('pt-BR');
+      this.loadEnviromentsByUnit(audit.unit.id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
       this.audit = audit;
-      this.selectedEnviroment.push(this.audit.enviroments_id.toString());
+     //this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
-    }*/
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{
@@ -214,7 +235,7 @@ export class AuditComponent implements OnInit {
       evaluations.push(this.mapperSaveEvaluation(env));
     })
     return new SaveAuditDto(audit.title, 
-                            audit.units_id, 
+                            audit.unit_id, 
                             evaluations,
                             audit.initial_date,
                             audit.due_date,
@@ -224,7 +245,7 @@ export class AuditComponent implements OnInit {
   }
 
   mapperSaveEvaluation(evaluation: Evaluation): SaveEvaluationDto{
-    return new SaveEvaluationDto(evaluation.id, evaluation.id, evaluation.environment_id, evaluation.user_id);
+    return new SaveEvaluationDto(evaluation.id, evaluation.id, evaluation.Enviroment.id, evaluation.User.id);
   }
 
   getValidation(res) {
@@ -259,19 +280,13 @@ export class AuditComponent implements OnInit {
     this.auditService.remove(id)
     .subscribe((res) => {
       this.getValidation(res);
-     // this.load();
+      this.load();
       this.auditForm.reset();
     },
       error => {
         this.getValidation(error.error)
       }
     );
-  }
-
-  checkStatus(audit: Audit): string {
-    /*return audit.due_date.getTime() >= new Date().setHours(0,0,0,0)
-      ? audit.status = "PENDENTE" : audit.status = "ATRASADA";*/
-      return null;
   }
 
   @ViewChild('myTable') table: any;
@@ -286,17 +301,6 @@ export class AuditComponent implements OnInit {
     this.timeout = setTimeout(() => {
       console.log('paged!', event);
     }, 100);
-  }
-
-  fetch(cb) {
-    const req = new XMLHttpRequest();
-    req.open('GET', `assets/data/100k.json`);
-
-    req.onload = () => {
-      cb(JSON.parse(req.response));
-    };
-
-    req.send();
   }
 
   toggleExpandRow(row) {

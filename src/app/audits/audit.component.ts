@@ -30,22 +30,20 @@ export class AuditComponent implements OnInit {
    totalMessage: 'Total',
    selectedMessage: 'Selecionados'
   }
-
+  
   messageAuditsGrid = {
     emptyMessage: 'Nenhuma auditoria cadastrada',
    }
-  
+
   audit: Audit = new Audit();
   saveAudit: SaveAuditDto;
   evaluations = new Array<Evaluation>();
   enviroments: Enviroment[];
   enviromentsList: Enviroment[];
-  
+  userEmails: Array<string> = [];
   users: User[];
   user_selected: number = -1;
-  
   selected = [];
-
   isMultiple: boolean = true;
   audits: Audit[] = new Array<Audit>();
   period: Date[];
@@ -88,8 +86,10 @@ export class AuditComponent implements OnInit {
                                                           environment.enviroment_types_id,
                                                           environment.units_id,
                                                           environment.users_id), 
-                                           new User(this.users[this.user_selected].id, 
-                                           this.users[this.user_selected].name)));
+                                           new User(
+                                             this.users[this.user_selected].id, 
+                                             this.users[this.user_selected].name, this.users[this.user_selected].email)
+                                          ));
       this.enviromentsList = this.enviromentsList.filter( env => env != environment);
       this.selected = [];
     });
@@ -120,10 +120,9 @@ export class AuditComponent implements OnInit {
   load() {
     this.audits = [];
     this.auditService.load()
-      .subscribe(
-        audits => {
-          console.log('retorno do banco', audits)
-          audits.forEach(audit => {
+      .subscribe(audits => {
+        audits.forEach(audit => {
+            console.log('audit', audit)
             this.audits.push(new Audit(audit.title, 
                                        audit.Evaluations[0].Enviroment.Unit, 
                                        audit.Evaluations,
@@ -134,7 +133,6 @@ export class AuditComponent implements OnInit {
                                        audit.id));
           });
           this.audits = this.audits.filter(x => x != null);
-          console.log('no componente', this.audits);
           this.auditFiltered = this.audits.slice(0, 10);
           this.lengthAuditsPagination = this.audits.length;
         },
@@ -175,13 +173,12 @@ export class AuditComponent implements OnInit {
   }
 
   save(audit: Audit) {
-  //  this.evaluation.enviroments_id = this.selectedEnviroment;
     audit.initial_date = this.period[0];
     audit.due_date = this.period[1];
     
     audit.evaluations = this.evaluations;
-   this.saveAudit = this.mapperSaveAudit(audit);
-   this.audits = this.audits.filter(x => x != null);
+    this.saveAudit = this.mapperSaveAudit(audit);
+    this.audits = this.audits.filter(x => x != null);
     if(!audit.id){
       audit.status = 0;
       this.auditService.save(this.saveAudit)
@@ -192,12 +189,12 @@ export class AuditComponent implements OnInit {
             env.audits_id = this.saveAudit.id;
           });
           this._evaluationService.save(this.saveAudit)
-            .subscribe(res => {
-              this.enviromentsList = [];
-
+            .subscribe(() => {
+              this.auditService.sendEmail(this.userEmails)
+                .subscribe(() => {this.load()})
             });
           this.auditForm.reset();
-          this.load();
+          
         })
     } else {
       this.auditService.update(this.saveAudit)
@@ -208,7 +205,7 @@ export class AuditComponent implements OnInit {
             env.audits_id = this.saveAudit.id;
           });
         this._evaluationService.save(this.saveAudit)
-          .subscribe(res => {
+          .subscribe(() => {
             this.enviromentsList = [];
           });
         this.load();
@@ -219,19 +216,17 @@ export class AuditComponent implements OnInit {
   update(audit: Audit): void {
       this.audit = audit;
       this.evaluations = audit.evaluations;
-      //this.evaluation.users_id = audit.users_id; 
       this.audit.unit.id  = audit.unit.id;
-      //moment.locale('pt-BR');
       this.loadEnviromentsByUnit(audit.unit.id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
       this.audit = audit;
-     //this.selectedEnviroment.push(this.audit.enviroments_id.toString());
       window.scroll(0, 0);
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{
     let evaluations = new Array<SaveEvaluationDto>();
     this.evaluations.forEach( env => {
+      this.userEmails.push(env.User.email);
       evaluations.push(this.mapperSaveEvaluation(env));
     })
     return new SaveAuditDto(audit.title, 

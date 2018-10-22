@@ -30,6 +30,10 @@ export class AuditComponent implements OnInit {
    totalMessage: 'Total',
    selectedMessage: 'Selecionados'
   }
+
+  messageAuditsGrid = {
+    emptyMessage: 'Nenhuma auditoria cadastrada',
+   }
   
   audit: Audit = new Audit();
   saveAudit: SaveAuditDto;

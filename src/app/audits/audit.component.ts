@@ -182,20 +182,23 @@ export class AuditComponent implements OnInit {
     if(!audit.id){
       audit.status = 0;
       this.auditService.save(this.saveAudit)
-        .subscribe(res => {
+        .subscribe(async res => {
           this.getValidation(res);
           this.saveAudit.id = res['auditId'];
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
-          this._evaluationService.save(this.saveAudit)
-            .subscribe(() => {
-              this.auditService.sendEmail(this.userEmails)
-                .subscribe(() => {this.load()})
+          await this._evaluationService.save(this.saveAudit)
+            .subscribe(async () => {
+              await this.auditService.sendEmail(this.userEmails)
+                .subscribe(() => {
+                  
+              });
+              this.evaluations = [];
+              this.load();
             });
           this.auditForm.reset();
-          
-        })
+        });
     } else {
       this.auditService.update(this.saveAudit)
       .subscribe(res => {
@@ -207,6 +210,7 @@ export class AuditComponent implements OnInit {
         this._evaluationService.save(this.saveAudit)
           .subscribe(() => {
             this.enviromentsList = [];
+            this.evaluations = [];
           });
         this.load();
       });

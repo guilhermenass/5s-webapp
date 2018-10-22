@@ -13,9 +13,11 @@ import { SaveAuditDto } from './save-audit-dto';
 export class AuditService {
     
     url: string;
+    emailUrl: string;
 
    constructor(public http: HttpClient) {
        this.url = `${environment.apiUrl}/audits`;
+       this.emailUrl = `${environment.apiUrl}/email`;
     }
 
     save(audit: SaveAuditDto) {
@@ -39,5 +41,9 @@ export class AuditService {
 
     remove(id) {
        return this.http.delete(`${this.url}/${id}`);
+    }
+
+    sendEmail(emails: Array<string>) {
+        return this.http.post(`${this.emailUrl}/schedule`, emails)
     }
 }

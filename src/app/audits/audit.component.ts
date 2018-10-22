@@ -30,6 +30,10 @@ export class AuditComponent implements OnInit {
    totalMessage: 'Total',
    selectedMessage: 'Selecionados'
   }
+
+  messageAuditsGrid = {
+    emptyMessage: 'Nenhuma auditoria cadastrada',
+   }
   
   audit: Audit = new Audit();
   saveAudit: SaveAuditDto;
@@ -184,12 +188,13 @@ export class AuditComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.saveAudit.id = res['auditId'];
-            this.saveAudit.evaluations.forEach( env => {
-              env.audits_id = this.saveAudit.id;
-            });
+          this.saveAudit.evaluations.forEach( env => {
+            env.audits_id = this.saveAudit.id;
+          });
           this._evaluationService.save(this.saveAudit)
             .subscribe(res => {
               this.enviromentsList = [];
+
             });
           this.auditForm.reset();
           this.load();

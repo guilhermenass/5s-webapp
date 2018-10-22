@@ -18,13 +18,8 @@ export class AuditService {
        this.url = `${environment.apiUrl}/audits`;
     }
 
-   save(audit: SaveAuditDto) {
-        const httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json'
-            })
-        };
-      return this.http.post(this.url, audit);
+    save(audit: SaveAuditDto) {
+        return this.http.post(this.url, audit);
     }
 
     update(audit: SaveAuditDto) {

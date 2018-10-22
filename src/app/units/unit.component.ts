@@ -45,7 +45,6 @@ export class UnitComponent implements OnInit {
         console.log(error);
       },
     );
-    console.log(this.states);
   }
 
   getCities(stateId) {
@@ -57,7 +56,6 @@ export class UnitComponent implements OnInit {
         console.log(error);
       },
     );
-    console.log(this.cities);
   }
 
   save(unit): void {

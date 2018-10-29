@@ -12,10 +12,11 @@ import { environment } from '../../environments/environment';
 export class UserService {
 
     url: string;
-    utilUrl: string;
+    emailUrl: string;
 
-    constructor(public http: HttpClient) {
+    constructor(public httpClient: HttpClient) {
         this.url = `${environment.apiUrl}/users`;
+        this.emailUrl = `${environment.apiUrl}/email`
     }
 
     save(user: User) {
@@ -24,7 +25,7 @@ export class UserService {
                 'Content-Type': 'application/json'
             })
         };
-        return this.http.post(this.url, user, httpOptions);
+        return this.httpClient.post(this.url, user, httpOptions);
     }
 
     update(user: User) {
@@ -33,14 +34,18 @@ export class UserService {
                 'Content-Type': 'application/json'
             })
         };
-        return this.http.put(`${this.url}/${user.id}`, user, httpOptions);
+        return this.httpClient.put(`${this.url}/${user.id}`, user, httpOptions);
     }
 
     load(): Observable<User[]> {
-        return this.http.get<User[]>(this.url);
+        return this.httpClient.get<User[]>(this.url);
     }
 
     remove(id) {
-        return this.http.delete(`${this.url}/${id}`);
+        return this.httpClient.delete(`${this.url}/${id}`);
+    }
+
+    sendEmailNewPassword(id: number, email: string) {
+        return this.httpClient.post(`${this.emailUrl}/newPassword`, {email: email, id: id});
     }
 }

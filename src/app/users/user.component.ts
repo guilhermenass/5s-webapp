@@ -33,6 +33,7 @@ export class UserComponent implements OnInit {
   UserTypeDisplay = UserTypeDisplay;
   userFiltered: User[];
   lengthUsersPagination: number;
+  emailNewUser: string;
   @ViewChild('userForm') userForm: NgForm;
 
   constructor(private userService: UserService) {
@@ -116,18 +117,16 @@ export class UserComponent implements OnInit {
     return false;
   }
 
-  save(user): void {
-
-    user["profile"] = 
-      Number(this.selectItems[0]) |
-      Number(this.selectItems[1]) |
-      Number(this.selectItems[2])
+  save(user: User): void {
+    user.profile = this.getUserProfile();
+    this.emailNewUser = user.email;
 
     if(!this.checkIfExists(user)) {
       if (!user.id) {
         this.userService.save(user)
           .subscribe(res => {
             this.getValidation(res);
+            this.sendEmailToNewUser(res['id']);
             this.load();
           });
       } else {
@@ -140,6 +139,12 @@ export class UserComponent implements OnInit {
     }
   }
 
+    private getUserProfile(): any {
+        return Number(this.selectItems[0]) |
+            Number(this.selectItems[1]) |
+            Number(this.selectItems[2]);
+    }
+
   showModal(title, text) {
     swal({
       title: title,
@@ -148,6 +153,11 @@ export class UserComponent implements OnInit {
       icon: 'warning',
       dangerMode: true,
     });
+  }
+
+  sendEmailToNewUser(id: number) {
+    this.userService.sendEmailNewPassword(id, this.emailNewUser)
+      .subscribe(() => {})
   }
 
   update(user: User): void {

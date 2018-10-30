@@ -122,7 +122,6 @@ export class AuditComponent implements OnInit {
     this.auditService.load()
       .subscribe(audits => {
         audits.forEach(audit => {
-            console.log('audit', audit)
             this.audits.push(new Audit(audit.title, 
                                        audit.Evaluations[0].Enviroment.Unit, 
                                        audit.Evaluations,

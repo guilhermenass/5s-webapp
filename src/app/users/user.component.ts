@@ -108,8 +108,6 @@ export class UserComponent implements OnInit {
 
   checkIfExists(user: User) {
     let isRegistered = this.users.find(currentUser => currentUser.email === user.email);
-    user.password = 'newPasswordFirstAccess';
-
     if (isRegistered && isRegistered.id !== user.id) {
       this.showModal('Usuário não cadastrado', 'Já existe um usuário com este e-mail');
       return true;

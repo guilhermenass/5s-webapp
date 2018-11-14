@@ -191,7 +191,8 @@ export class AuditComponent implements OnInit {
             .subscribe(async () => {
               await this.auditService.sendEmail(this.userEmails)
                 .subscribe(() => {
-                  
+                  this.audit = new Audit();
+                  this.evaluations = new Array<Evaluation>();
               });
               this.evaluations = [];
               this.load();
@@ -210,6 +211,9 @@ export class AuditComponent implements OnInit {
           .subscribe(() => {
             this.enviromentsList = [];
             this.evaluations = [];
+            this.audit = new Audit();
+            this.evaluations = new Array<Evaluation>();
+            this.auditForm.reset();
           });
         this.load();
       });
@@ -217,13 +221,25 @@ export class AuditComponent implements OnInit {
   }
 
   update(audit: Audit): void {
-      this.audit = audit;
-      this.evaluations = audit.evaluations;
+      this.audit = new Audit(audit.title,audit.unit,audit.evaluations,audit.initial_date,audit.due_date,audit.description,audit.status,audit.id);
+      this.evaluations = new Array<Evaluation>();
+      this.evaluations = this.mapperNewArrayEvaluations(audit.evaluations);
       this.audit.unit.id  = audit.unit.id;
       this.loadEnviromentsByUnit(audit.unit.id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
-      this.audit = audit;
+     
       window.scroll(0, 0);
+  }
+
+  mapperNewArrayEvaluations(evaluations: Array<Evaluation>): Array<Evaluation>{
+    let newEvaluations = new Array<Evaluation>();
+    evaluations.forEach(eva => {
+      let enviroment = new Enviroment(eva.Enviroment.id, eva.Enviroment.block, eva.Enviroment.description,
+        eva.Enviroment.name, eva.Enviroment.enviroment_types_id, eva.Enviroment.units_id, eva.Enviroment.users_id);
+      let user = new User(eva.User.id, eva.User.name, eva.User.email, eva.User.password, eva.User.profile);
+      newEvaluations.push(new Evaluation(enviroment, user, eva.id))
+    });
+    return newEvaluations;
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{

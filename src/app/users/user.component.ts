@@ -126,12 +126,16 @@ export class UserComponent implements OnInit {
             this.getValidation(res);
             this.sendEmailToNewUser(res['id']);
             this.load();
+            this.user = new User();
+            this.userForm.reset();
           });
       } else {
         this.userService.update(user)
         .subscribe((res) => {
           this.getValidation(res);
           this.load();
+          this.user = new User();
+          this.userForm.reset();
         })
       }
     }

@@ -69,6 +69,8 @@ export class QuestionComponent implements OnInit {
           this.saveInAssociateTable(res['questions_id'], res['enviroment_types_id']);
           this.getValidation(res);
           this.load();
+          this.question = new Question();
+          this.questionForm.reset();
         });
     } else {
       question['enviroment_types_id'] = this.selectedEnviromentTypes;
@@ -80,6 +82,8 @@ export class QuestionComponent implements OnInit {
         this.saveInAssociateTable(this.question.id, this.question['enviroment_types_id'])
         this.getValidation(res[0]);
         this.load();
+        this.question = new Question();
+        this.questionForm.reset();
       })
     }
   }
@@ -139,7 +143,7 @@ export class QuestionComponent implements OnInit {
         this.loadEnviromentsTypeByUnit();
       })
 
-    this.question = question;
+    this.question = new Question(question.id, question.title, question.description, question.sense);
     window.scroll(0, 0);
   }
 

@@ -194,7 +194,6 @@ export class AuditComponent implements OnInit {
                   this.audit = new Audit();
                   this.evaluations = new Array<Evaluation>();
               });
-              this.evaluations = [];
               this.load();
             });
           this.auditForm.reset();
@@ -233,11 +232,11 @@ export class AuditComponent implements OnInit {
 
   mapperNewArrayEvaluations(evaluations: Array<Evaluation>): Array<Evaluation>{
     let newEvaluations = new Array<Evaluation>();
-    evaluations.forEach(eva => {
-      let enviroment = new Enviroment(eva.Enviroment.id, eva.Enviroment.block, eva.Enviroment.description,
-        eva.Enviroment.name, eva.Enviroment.enviroment_types_id, eva.Enviroment.units_id, eva.Enviroment.users_id);
-      let user = new User(eva.User.id, eva.User.name, eva.User.email, eva.User.password, eva.User.profile);
-      newEvaluations.push(new Evaluation(enviroment, user, eva.id))
+    evaluations.forEach(evaluation => {
+      let enviroment = new Enviroment(evaluation.Enviroment.id, evaluation.Enviroment.block, evaluation.Enviroment.description,
+        evaluation.Enviroment.name, evaluation.Enviroment.enviroment_types_id, evaluation.Enviroment.units_id, evaluation.Enviroment.users_id);
+      let user = new User(evaluation.User.id, evaluation.User.name, evaluation.User.email, evaluation.User.password, evaluation.User.profile);
+      newEvaluations.push(new Evaluation(enviroment, user, evaluation.id))
     });
     return newEvaluations;
   }

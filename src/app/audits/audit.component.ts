@@ -191,9 +191,9 @@ export class AuditComponent implements OnInit {
             .subscribe(async () => {
               await this.auditService.sendEmail(this.userEmails)
                 .subscribe(() => {
-                  
+                  this.audit = new Audit();
+                  this.evaluations = new Array<Evaluation>();
               });
-              this.evaluations = [];
               this.load();
             });
           this.auditForm.reset();
@@ -210,6 +210,9 @@ export class AuditComponent implements OnInit {
           .subscribe(() => {
             this.enviromentsList = [];
             this.evaluations = [];
+            this.audit = new Audit();
+            this.evaluations = new Array<Evaluation>();
+            this.auditForm.reset();
           });
         this.load();
       });
@@ -217,13 +220,25 @@ export class AuditComponent implements OnInit {
   }
 
   update(audit: Audit): void {
-      this.audit = audit;
-      this.evaluations = audit.evaluations;
+      this.audit = new Audit(audit.title,audit.unit,audit.evaluations,audit.initial_date,audit.due_date,audit.description,audit.status,audit.id);
+      this.evaluations = new Array<Evaluation>();
+      this.evaluations = this.mapperNewArrayEvaluations(audit.evaluations);
       this.audit.unit.id  = audit.unit.id;
       this.loadEnviromentsByUnit(audit.unit.id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
-      this.audit = audit;
+     
       window.scroll(0, 0);
+  }
+
+  mapperNewArrayEvaluations(evaluations: Array<Evaluation>): Array<Evaluation>{
+    let newEvaluations = new Array<Evaluation>();
+    evaluations.forEach(evaluation => {
+      let enviroment = new Enviroment(evaluation.Enviroment.id, evaluation.Enviroment.block, evaluation.Enviroment.description,
+        evaluation.Enviroment.name, evaluation.Enviroment.enviroment_types_id, evaluation.Enviroment.units_id, evaluation.Enviroment.users_id);
+      let user = new User(evaluation.User.id, evaluation.User.name, evaluation.User.email, evaluation.User.password, evaluation.User.profile);
+      newEvaluations.push(new Evaluation(enviroment, user, evaluation.id))
+    });
+    return newEvaluations;
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{

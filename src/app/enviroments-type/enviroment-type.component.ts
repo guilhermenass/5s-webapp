@@ -39,12 +39,16 @@ export class EnviromentTypeComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.load();
+          this.enviromentType = new EnviromentType();
+          this.enviromentTypeForm.reset();
       });
      } else {
       this.enviromentTypeService.update(enviromentType)
       .subscribe(res => {
         this.getValidation(res);
         this.load();
+        this.enviromentType = new EnviromentType();
+        this.enviromentTypeForm.reset();
       });
     }
   }
@@ -71,7 +75,7 @@ export class EnviromentTypeComponent implements OnInit {
     );
   }
   update(enviromentType: EnviromentType): void {
-    this.enviromentType = enviromentType;
+    this.enviromentType = new EnviromentType(enviromentType.id, enviromentType.name, enviromentType.description);
     window.scroll(0, 0);
   }
 

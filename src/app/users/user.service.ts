@@ -41,6 +41,10 @@ export class UserService {
         return this.httpClient.get<User[]>(this.url);
     }
 
+    loadResponsiblesByUnit(unitId: number): Observable<User[]>{
+        return this.httpClient.get<User[]>(`${this.url}/${unitId}`)
+    }
+
     remove(id) {
         return this.httpClient.delete(`${this.url}/${id}`);
     }

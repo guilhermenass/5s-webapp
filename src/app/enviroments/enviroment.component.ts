@@ -43,7 +43,6 @@ export class EnviromentComponent implements OnInit {
   ngOnInit() {
     this.loadUnits();
     this.loadEnviromentTypes();
-    this.loadResponsibles();
     this.load();
   }
 
@@ -73,12 +72,11 @@ export class EnviromentComponent implements OnInit {
     }
   }
 
-  loadResponsibles() {
-    this.userService.load()
+  loadResponsibles(unitId: number) {
+    this.userService.loadResponsiblesByUnit(unitId)
     .subscribe(
       users => {
-        /* Todos os perfis que são maiores que 3, possuem algum vinculo com RESPONSÁVEL */
-        this.users = users.filter(user => user.profile > 3);
+        this.users = users;
       },
       error => {
         console.log(error);

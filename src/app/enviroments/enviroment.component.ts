@@ -58,12 +58,16 @@ export class EnviromentComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.load();
+          this.enviroment = new Enviroment();
+          this.enviromentForm.reset();
       });
     } else {
       this.enviromentService.update(enviroment)
       .subscribe(res => {
         this.getValidation(res);
         this.load();
+        this.enviroment = new Enviroment();
+        this.enviromentForm.reset();
       });
     }
   }
@@ -119,7 +123,8 @@ export class EnviromentComponent implements OnInit {
   }
 
   update(enviroment: Enviroment): void {
-    this.enviroment = enviroment;
+    this.enviroment = new Enviroment(enviroment.id, enviroment.block, enviroment.description,
+      enviroment.name, enviroment.enviroment_types_id, enviroment.units_id, enviroment.users_id);
     window.scroll(0, 0);
   }
 

@@ -64,12 +64,16 @@ export class UnitComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.load();
+          this.unit = new Unit();
+          this.unitForm.reset();
       });
     } else {
       this.unitService.update(unit)
       .subscribe(res => {
         this.getValidation(res);
         this.load();
+        this.unit = new Unit();
+        this.unitForm.reset();
       });
     }
   }
@@ -98,7 +102,7 @@ export class UnitComponent implements OnInit {
 
   update(unit: Unit): void {
     this.getCities(unit.state);
-    this.unit = unit;
+    this.unit = new Unit(unit.id, unit.name, unit.city, unit.description, unit.state);
     window.scroll(0, 0);
   }
 

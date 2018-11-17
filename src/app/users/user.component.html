@@ -75,9 +75,10 @@
           <table *ngIf="users?.length > 0; else noUsers" class="table table--clean">
             <thead>
               <tr>
-                <th width="30%">Nome</th>
-                <th width="30%">E-mail</th>
-                <th width="30%">Perfil</th>
+                <th width="22.5%">Nome</th>
+                <th width="22.5%">E-mail</th>
+                <th width="22.5%">Perfil</th>
+                <th width="22.5%">Unidade</th>
                 <th width="10%">Ações</th>
               </tr>
             </thead>
@@ -86,6 +87,7 @@
                 <td>{{user.name}}</td>
                 <td>{{user.email}}</td>
                 <td>{{ UserTypeDisplay[user.profile] }}</td>
+                <td> {{user.Unit.name}}</td>
                 <td>
                   <span class="inline-block">
                     <button class="btn btn-info btn-icon no-margin" (click)="update(user)">

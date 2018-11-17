@@ -125,7 +125,8 @@ export class EnviromentComponent implements OnInit {
   update(enviroment: Enviroment): void {
     this.enviroment = new Enviroment(enviroment.id, enviroment.block, enviroment.description,
       enviroment.name, enviroment.enviroment_types_id, enviroment.units_id, enviroment.users_id);
-    window.scroll(0, 0);
+      this.loadResponsibles(enviroment.units_id);
+      window.scroll(0, 0);
   }
 
   pageChanged(event: PageChangedEvent): void {

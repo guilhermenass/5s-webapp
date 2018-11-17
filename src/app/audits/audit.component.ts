@@ -189,14 +189,10 @@ export class AuditComponent implements OnInit {
           });
           await this._evaluationService.save(this.saveAudit)
             .subscribe(async () => {
-              await this.auditService.sendEmail(this.userEmails)
-                .subscribe(() => {
-                  this.audit = new Audit();
-                  this.evaluations = new Array<Evaluation>();
-              });
+              await this.auditService.sendEmail(this.userEmails);
               this.load();
             });
-          this.auditForm.reset();
+            this.resetForm();
         });
     } else {
       this.auditService.update(this.saveAudit)
@@ -206,17 +202,19 @@ export class AuditComponent implements OnInit {
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
-        this._evaluationService.save(this.saveAudit)
-          .subscribe(() => {
-            this.enviromentsList = [];
-            this.evaluations = [];
-            this.audit = new Audit();
-            this.evaluations = new Array<Evaluation>();
-            this.auditForm.reset();
-          });
+        this._evaluationService.save(this.saveAudit);
         this.load();
+        this.resetForm();
       });
     }
+  }
+
+  resetForm(){
+    this.enviromentsList = [];
+    this.evaluations = [];
+    this.audit = new Audit();
+    this.evaluations = new Array<Evaluation>();
+    this.auditForm.reset();
   }
 
   update(audit: Audit): void {

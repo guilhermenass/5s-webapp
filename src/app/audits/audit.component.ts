@@ -141,12 +141,12 @@ export class AuditComponent implements OnInit {
     );
   }
 
-   loadEnviromentsByUnit(unitId) {
+  loadEnviromentsByUnit(unitId) {
       this._enviromentService.loadEnviromentsByUnit(unitId)
-        .subscribe(enviroments => {
-          this.enviroments = enviroments;
-          this.enviromentsList = enviroments;
-      });
+      .subscribe(enviroments => {
+        this.enviroments = enviroments;
+        this.enviromentsList = enviroments;
+    });
    }
 
   loadUsers() {
@@ -217,14 +217,19 @@ export class AuditComponent implements OnInit {
     this.auditForm.reset();
   }
 
-  update(audit: Audit): void {
+  async update(audit: Audit): Promise<void> {
       this.audit = new Audit(audit.title,audit.unit,audit.evaluations,audit.initial_date,audit.due_date,audit.description,audit.status,audit.id);
       this.evaluations = new Array<Evaluation>();
       this.evaluations = this.mapperNewArrayEvaluations(audit.evaluations);
       this.audit.unit.id  = audit.unit.id;
-      this.loadEnviromentsByUnit(audit.unit.id);
+      await this._enviromentService.loadEnviromentsByUnit(audit.unit_id)
+      .subscribe(enviroments => {
+        this.enviroments = enviroments;
+        this.evaluations.forEach(x => {
+          this.enviromentsList = this.enviroments.filter(b => b.id != x.Enviroment.id);
+        })
+    });
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
-     
       window.scroll(0, 0);
   }
 

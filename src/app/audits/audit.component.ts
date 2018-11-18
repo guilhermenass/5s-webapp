@@ -38,6 +38,7 @@ export class AuditComponent implements OnInit {
   audit: Audit = new Audit();
   saveAudit: SaveAuditDto;
   evaluations = new Array<Evaluation>();
+  evaluationsOld = new Array<Evaluation>();
   enviroments: Enviroment[];
   enviromentsList: Enviroment[];
   userEmails: Array<string> = [];
@@ -199,6 +200,24 @@ export class AuditComponent implements OnInit {
       .subscribe(res => {
         this.getValidation(res);
         this.auditForm.reset();
+        let evaluationsUpdate = [];
+        let evaluationsNew = [];
+
+        this.evaluations.forEach((evaluation, index) => {
+          
+          let a = this.evaluationsOld.find(x => x.id === evaluation.id);
+          if(a){
+            if(a.Enviroment.id != evaluation.Enviroment.id ||
+              a.User.id != evaluation.User.id){
+                evaluationsUpdate.push(evaluation);
+            }
+          } else {
+            evaluationsNew.push(evaluation); 
+          }
+        });
+
+        console.log('evaluationsUpdate',evaluationsUpdate);
+        console.log('evaluationsNew',evaluationsNew)
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
@@ -221,6 +240,7 @@ export class AuditComponent implements OnInit {
       this.audit = new Audit(audit.title,audit.unit,audit.evaluations,audit.initial_date,audit.due_date,audit.description,audit.status,audit.id);
       this.evaluations = new Array<Evaluation>();
       this.evaluations = this.mapperNewArrayEvaluations(audit.evaluations);
+      this.evaluationsOld = this.evaluations;
       this.audit.unit.id  = audit.unit.id;
       this.loadEnviromentsByUnit(audit.unit.id);
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];

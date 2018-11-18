@@ -200,24 +200,6 @@ export class AuditComponent implements OnInit {
       .subscribe(res => {
         this.getValidation(res);
         this.auditForm.reset();
-        let evaluationsUpdate = [];
-        let evaluationsNew = [];
-
-        this.evaluations.forEach((evaluation, index) => {
-          
-          let a = this.evaluationsOld.find(x => x.id === evaluation.id);
-          if(a){
-            if(a.Enviroment.id != evaluation.Enviroment.id ||
-              a.User.id != evaluation.User.id){
-                evaluationsUpdate.push(evaluation);
-            }
-          } else {
-            evaluationsNew.push(evaluation); 
-          }
-        });
-
-        console.log('evaluationsUpdate',evaluationsUpdate);
-        console.log('evaluationsNew',evaluationsNew)
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });

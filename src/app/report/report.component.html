@@ -24,7 +24,7 @@
   </div>
 
   <div class="col-sm-3">
-    <button class="btn btn-success btn-filter" (click)="filter()">Filtrar</button>
+    <button class="btn btn-success btn-filter" [disabled]="*!ngIf="report.unitId" (click)="filter()">Filtrar</button>
   </div>
 </div>
 

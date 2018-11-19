@@ -74,6 +74,12 @@ const MENUITEMS = [
         name: 'Tipo de Ambiente',
         type: 'link',
         icon: 'fas fa-sitemap'
+      },
+      {
+        state: 'reports',
+        name: 'Relatórios',
+        type: 'link',
+        icon: 'fas fa-chart-bar'
       }
     ]
   }

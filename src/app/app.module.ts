@@ -11,9 +11,8 @@ import { AuthLayoutComponent } from './layouts/auth/auth-layout.component';
 import { SharedModule } from './shared/shared.module';
 import { BreadcrumbsComponent } from './layouts/admin/breadcrumbs/breadcrumbs.component';
 import { TitleComponent } from './layouts/admin/title/title.component';
-import { LocationStrategy, PathLocationStrategy, CommonModule} from '@angular/common';
+import { CommonModule} from '@angular/common';
 import { NgDatepickerModule } from 'ng2-datepicker';
-import { UserComponent } from './users/user.component';
 import { UserService } from './users/user.service';
 import { UnitService } from './units/unit.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -24,6 +23,7 @@ import { QuestionService } from './questions/question.service';
 import { AuditService } from './audits/audit.service';
 import { EvaluationService } from './evaluations/evaluation.service';
 import { PageNotFoundComponent } from './components/page-not-found.component';
+import { ReportResultsComponent } from './report-results/report-results.component';
 
 @NgModule({
   declarations: [

@@ -1,6 +1,6 @@
 <app-card *ngIf="evaluations" [title]="'Resultados do filtro'">
     <div class="table-responsive">
-      <table *ngIf="evaluations?.length > 0; else noQuestions" class="table table--clean">
+      <table *ngIf="evaluations?.length > 0" class="table table--clean">
         <thead>
           <tr>
             <th>Bloco</th>

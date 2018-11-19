@@ -1,0 +1,31 @@
+<div class="form-group row">
+  <div class="col-sm-3">
+    <label>Unidade</label>
+    <select
+      [(ngModel)]="report.unitId"
+      (change)="loadAuditsByUnit($event.target.value)"
+      class="form-control">
+      <option *ngFor="let unit of units" [value]="unit.id">
+        {{ unit.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="col-sm-3">
+    <label>Auditoria</label>
+    <select
+      [(ngModel)]="report.auditId"
+      class="form-control">
+      <option *ngFor="let audit of audits" [value]="audit.id">
+        {{ audit.title }}
+      </option>
+    </select>
+    <span *ngIf="report.unitId && audits?.length == 0" style="color:red">Nenhuma auditoria cadastrada para essa unidade</span>
+  </div>
+
+  <div class="col-sm-3">
+    <button class="btn btn-success btn-filter" (click)="filter()">Filtrar</button>
+  </div>
+</div>
+
+<report-results [evaluations]="evaluations"></report-results>

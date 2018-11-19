@@ -1,0 +1,33 @@
+<app-card *ngIf="evaluations" [title]="'Resultados do filtro'">
+    <div class="table-responsive">
+      <table *ngIf="evaluations?.length > 0; else noQuestions" class="table table--clean">
+        <thead>
+          <tr>
+            <th>Bloco</th>
+            <th>Nome do ambiente</th>
+            <th>Status</th>
+            <th>Nota da avaliação</th>
+            <th>Data de finalização</th>
+            <th>Avaliador</th>
+            <th>Responsável do ambiente</th>
+          </tr>
+        </thead>
+        
+        <tbody>
+          <tr *ngFor="let evaluation of evaluations">
+            <td>{{ evaluation.block }}</td>
+            <td>{{ evaluation.enviroment_name }} </td>
+            <td>{{ evaluation.status }} </td>
+            <td>{{ evaluation.grade }}</td>
+            <td>{{ evaluation.date | date: 'dd/MM/yyyy'}}</td>
+            <td>{{ evaluation.appraiser }}</td>
+            <td>{{ evaluation.responsible }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </app-card>
+
+  <button class="btn btn-primary" *ngIf="evaluations?.length > 0" (click)="downloadExcel()">Gerar excel</button>
+
+  <!-- Bloco, Ambiente, Status, Nota (primeira avaliação), Data, Responsável, Avaliador. -->

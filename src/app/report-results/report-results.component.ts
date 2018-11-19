@@ -6,13 +6,9 @@ import { Evaluation } from '../audits/evaluation';
   selector: 'report-results',
   templateUrl: './report-results.component.html'
 })
-export class ReportResultsComponent implements OnInit {
+export class ReportResultsComponent {
 
   constructor() { }
-
-  ngOnInit() {
-
-  }
 
   @Input('evaluations') evaluations: Evaluation[];
 

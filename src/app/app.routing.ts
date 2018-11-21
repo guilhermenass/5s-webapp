@@ -34,7 +34,11 @@ export const AppRoutes: Routes = [{
     }, {
       path: 'units',
       loadChildren: './units/unit.module#UnitModule',
+    }, {
+      path: 'reports',  
+      loadChildren: './report/report.module#ReportModule'
     }
+    
   ]
 }, {
   path: '**',

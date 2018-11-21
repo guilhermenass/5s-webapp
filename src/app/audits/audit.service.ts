@@ -6,6 +6,7 @@ import 'rxjs/add/operator/catch';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { SaveAuditDto } from './save-audit-dto';
+import { Audit } from './audit';
 
 @Injectable()
 
@@ -36,6 +37,16 @@ export class AuditService {
         return this.http.get(this.url).map((response: Response) => {
             return response;
         });
+    }
+
+    loadAuditsToReport(): Observable<Audit[]> {
+        return this.http.get<Audit[]>(`${this.url}/report`).map((response: Audit[]) => {
+            return response;
+        })
+    }
+
+    loadAuditsByUnit(unitId): Observable<Audit[]> {
+        return this.http.get<Audit[]>(`${this.url}/${unitId}`)
     }
 
     remove(id) {

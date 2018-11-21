@@ -43,7 +43,6 @@ export class EnviromentComponent implements OnInit {
   ngOnInit() {
     this.loadUnits();
     this.loadEnviromentTypes();
-    this.loadResponsibles();
     this.load();
   }
 
@@ -59,22 +58,25 @@ export class EnviromentComponent implements OnInit {
         .subscribe(res => {
           this.getValidation(res);
           this.load();
+          this.enviroment = new Enviroment();
+          this.enviromentForm.reset();
       });
     } else {
       this.enviromentService.update(enviroment)
       .subscribe(res => {
         this.getValidation(res);
         this.load();
+        this.enviroment = new Enviroment();
+        this.enviromentForm.reset();
       });
     }
   }
 
-  loadResponsibles() {
-    this.userService.load()
+  loadResponsibles(unitId: number) {
+    this.userService.loadResponsiblesByUnit(unitId)
     .subscribe(
       users => {
-        /* Todos os perfis que são maiores que 3, possuem algum vinculo com RESPONSÁVEL */
-        this.users = users.filter(user => user.profile > 3);
+        this.users = users;
       },
       error => {
         console.log(error);
@@ -121,8 +123,10 @@ export class EnviromentComponent implements OnInit {
   }
 
   update(enviroment: Enviroment): void {
-    this.enviroment = enviroment;
-    window.scroll(0, 0);
+    this.enviroment = new Enviroment(enviroment.id, enviroment.block, enviroment.description,
+      enviroment.name, enviroment.enviroment_types_id, enviroment.units_id, enviroment.users_id);
+      this.loadResponsibles(enviroment.units_id);
+      window.scroll(0, 0);
   }
 
   pageChanged(event: PageChangedEvent): void {

@@ -9,6 +9,8 @@ import { NgForm } from '@angular/forms';
 import { IOption } from 'ng-select';
 import { UserType } from './user-type.enum'
 import { UserTypeDisplay } from './user-type-display.enum'
+import { UnitService } from '../units/unit.service';
+import { Unit } from '../units/unit';
 
 
 const helper = new JwtHelperService();
@@ -34,13 +36,16 @@ export class UserComponent implements OnInit {
   userFiltered: User[];
   lengthUsersPagination: number;
   emailNewUser: string;
+  units: Unit[];
+
   @ViewChild('userForm') userForm: NgForm;
 
-  constructor(private userService: UserService) {
+  constructor(private _userService: UserService, private _unitService: UnitService) {
   }
 
   ngOnInit(): void {
     this.load();
+    this.loadUnits();
     this.userSession = helper.decodeToken(localStorage.getItem('token'));
   }
 
@@ -74,7 +79,7 @@ export class UserComponent implements OnInit {
   }
 
   load() {
-    this.userService.load()
+    this._userService.load()
       .subscribe(
         users => {
           this.users = users;
@@ -87,6 +92,18 @@ export class UserComponent implements OnInit {
     );
   }
 
+  loadUnits() {
+    this._unitService.load()
+    .subscribe(
+      units => {
+        this.units = units;
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
   pageChanged(event: PageChangedEvent): void {
     const startItem = (event.page - 1) * event.itemsPerPage;
     const endItem = event.page * event.itemsPerPage;
@@ -94,7 +111,7 @@ export class UserComponent implements OnInit {
   }
 
   remove(id: string): void {
-    this.userService.remove(id)
+    this._userService.remove(id)
       .subscribe((res) => {
         this.getValidation(res);
         this.load();
@@ -121,17 +138,21 @@ export class UserComponent implements OnInit {
 
     if(!this.checkIfExists(user)) {
       if (!user.id) {
-        this.userService.save(user)
+        this._userService.save(user)
           .subscribe(res => {
             this.getValidation(res);
             this.sendEmailToNewUser(res['id']);
             this.load();
+            this.user = new User();
+            this.userForm.reset();
           });
       } else {
-        this.userService.update(user)
+        this._userService.update(user)
         .subscribe((res) => {
           this.getValidation(res);
           this.load();
+          this.user = new User();
+          this.userForm.reset();
         })
       }
     }
@@ -154,12 +175,12 @@ export class UserComponent implements OnInit {
   }
 
   sendEmailToNewUser(id: number) {
-    this.userService.sendEmailNewPassword(id, this.emailNewUser)
+    this._userService.sendEmailNewPassword(id, this.emailNewUser)
       .subscribe(() => {})
   }
 
   update(user: User): void {
-    this.user = new User(user.id, user.name, user.email, user.password, user.profile)
+    this.user = new User(user.id, user.name, user.email, user.password, user.profile, user.units_id)
     window.scroll(0, 0);
     this.selectItems = this.getUserType(user.profile);
   }

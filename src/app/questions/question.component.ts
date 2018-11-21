@@ -69,6 +69,8 @@ export class QuestionComponent implements OnInit {
           this.saveInAssociateTable(res['questions_id'], res['enviroment_types_id']);
           this.getValidation(res);
           this.load();
+          this.question = new Question();
+          this.questionForm.reset();
         });
     } else {
       question['enviroment_types_id'] = this.selectedEnviromentTypes;
@@ -80,6 +82,8 @@ export class QuestionComponent implements OnInit {
         this.saveInAssociateTable(this.question.id, this.question['enviroment_types_id'])
         this.getValidation(res[0]);
         this.load();
+        this.question = new Question();
+        this.questionForm.reset();
       })
     }
   }
@@ -126,20 +130,22 @@ export class QuestionComponent implements OnInit {
       .subscribe(() => {});
   }
 
-  update(question: Question): void {
-    this._questionService.getAssociatedItems(question.id)
-      .subscribe(relatedItems => {
-        const items = this.enviromentTypes.filter(enviroment => relatedItems.find(relatedItem => enviroment.id === relatedItem.enviroment_types_id));
-        this.selectedEnviromentTypes = items.map(item => String(item.id));
-      });
-
-    this._unitService.getUnitByEnviromentType(question.id)
-      .subscribe(unitId => {
+   update(question: Question): void {
+     this._unitService.getUnitByEnviromentType(question.id)
+      .subscribe(async unitId => {
         this.unitId = Number(unitId);
-        this.loadEnviromentsTypeByUnit();
-      })
+       await this.loadEnviromentsTypeByUnit();
+        this._questionService.getAssociatedItems(question.id)
+        .subscribe(relatedItems => {
+          const items = this.enviromentTypes.filter(enviroment => relatedItems.find(relatedItem => enviroment.id === relatedItem.enviroment_types_id));
+          this.selectedEnviromentTypes = items.map(item => String(item.id));
+        });
+      });
+      
 
-    this.question = question;
+
+
+    this.question = new Question(question.id, question.title, question.description, question.sense);
     window.scroll(0, 0);
   }
 

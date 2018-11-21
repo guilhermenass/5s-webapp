@@ -141,12 +141,12 @@ export class AuditComponent implements OnInit {
     );
   }
 
-   loadEnviromentsByUnit(unitId) {
+  loadEnviromentsByUnit(unitId) {
       this._enviromentService.loadEnviromentsByUnit(unitId)
-        .subscribe(enviroments => {
-          this.enviroments = enviroments;
-          this.enviromentsList = enviroments;
-      });
+      .subscribe(enviroments => {
+        this.enviroments = enviroments;
+        this.enviromentsList = enviroments;
+    });
    }
 
   loadUsers() {
@@ -189,14 +189,10 @@ export class AuditComponent implements OnInit {
           });
           await this._evaluationService.save(this.saveAudit)
             .subscribe(async () => {
-              await this.auditService.sendEmail(this.userEmails)
-                .subscribe(() => {
-                  
-              });
-              this.evaluations = [];
+              await this.auditService.sendEmail(this.userEmails);
               this.load();
             });
-          this.auditForm.reset();
+            this.resetForm();
         });
     } else {
       this.auditService.update(this.saveAudit)
@@ -206,24 +202,46 @@ export class AuditComponent implements OnInit {
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
-        this._evaluationService.save(this.saveAudit)
-          .subscribe(() => {
-            this.enviromentsList = [];
-            this.evaluations = [];
-          });
+        this._evaluationService.save(this.saveAudit);
         this.load();
+        this.resetForm();
       });
     }
   }
 
-  update(audit: Audit): void {
-      this.audit = audit;
-      this.evaluations = audit.evaluations;
+  resetForm(){
+    this.enviromentsList = [];
+    this.evaluations = [];
+    this.audit = new Audit();
+    this.evaluations = new Array<Evaluation>();
+    this.auditForm.reset();
+  }
+
+  async update(audit: Audit): Promise<void> {
+      this.audit = new Audit(audit.title,audit.unit,audit.evaluations,audit.initial_date,audit.due_date,audit.description,audit.status,audit.id);
+      this.evaluations = new Array<Evaluation>();
+      this.evaluations = this.mapperNewArrayEvaluations(audit.evaluations);
       this.audit.unit.id  = audit.unit.id;
-      this.loadEnviromentsByUnit(audit.unit.id);
+      await this._enviromentService.loadEnviromentsByUnit(audit.unit_id)
+      .subscribe(enviroments => {
+        this.enviroments = enviroments;
+        this.evaluations.forEach(x => {
+          this.enviromentsList = this.enviroments.filter(b => b.id != x.Enviroment.id);
+        })
+    });
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
-      this.audit = audit;
       window.scroll(0, 0);
+  }
+
+  mapperNewArrayEvaluations(evaluations: Array<Evaluation>): Array<Evaluation>{
+    let newEvaluations = new Array<Evaluation>();
+    evaluations.forEach(evaluation => {
+      let enviroment = new Enviroment(evaluation.Enviroment.id, evaluation.Enviroment.block, evaluation.Enviroment.description,
+        evaluation.Enviroment.name, evaluation.Enviroment.enviroment_types_id, evaluation.Enviroment.units_id, evaluation.Enviroment.users_id);
+      let user = new User(evaluation.User.id, evaluation.User.name, evaluation.User.email, evaluation.User.password, evaluation.User.profile);
+      newEvaluations.push(new Evaluation(enviroment, user, evaluation.id))
+    });
+    return newEvaluations;
   }
 
   mapperSaveAudit(audit: Audit): SaveAuditDto{

@@ -16,10 +16,11 @@ export class ReportResultsComponent {
   downloadExcel() {
     var options = { 
       showLabels: true, 
+      fieldSeparator: ';',
       useBom: true,
       noDownload: false,
       showTitle: false,
-      headers: ["Bloco", "Nome do Ambiente", "Status", "Nota", "Data de finalização", "Avaliador", "Responsável do ambiente"]
+      headers: ['Bloco', 'Nome do Ambiente', 'Status', 'Nota', 'Data de finalização', 'Avaliador', 'Responsável do ambiente']
     };
    
     new Angular5Csv(this.evaluations, 'Relatório 5S', options);

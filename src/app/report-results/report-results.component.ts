@@ -1,12 +1,15 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Angular5Csv } from 'angular5-csv/Angular5-csv';
 import { Evaluation } from '../audits/evaluation';
+import { EvaluationStatus } from '../evaluations/evaluation-status-enum';
 
 @Component({
   selector: 'report-results',
   templateUrl: './report-results.component.html'
 })
 export class ReportResultsComponent {
+
+  EvaluationStatus = EvaluationStatus;
 
   constructor() { }
 

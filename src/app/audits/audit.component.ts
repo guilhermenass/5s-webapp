@@ -206,7 +206,7 @@ export class AuditComponent implements OnInit {
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
-        this._evaluationService.save(this.saveAudit);
+        this._evaluationService.save(this.saveAudit).subscribe(() => { });
         this.load();
         this.resetForm();
       });
@@ -229,8 +229,9 @@ export class AuditComponent implements OnInit {
       await this._enviromentService.loadEnviromentsByUnit(audit.unit_id)
       .subscribe(enviroments => {
         this.enviroments = enviroments;
+        this.enviromentsList = enviroments;
         this.evaluations.forEach(x => {
-          this.enviromentsList = this.enviroments.filter(b => b.id != x.Enviroment.id);
+          this.enviromentsList = this.enviromentsList.filter(b => b.id != x.Enviroment.id);
         })
     });
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];

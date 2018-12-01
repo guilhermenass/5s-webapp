@@ -146,7 +146,7 @@
           (page)="onPage($event)">
           <ngx-datatable-row-detail #myDetailRow  [rowHeight]="'auto'" (toggle)="onDetailToggle($event)">
             <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
-              <div style="padding-left:35px">
+                <div style="padding-left:35px">
                   <div class="table-responsive">
                       <table class="table table--clean">
                         <thead>
@@ -206,7 +206,7 @@
                 </button>
               </span>
               <span class="inline-block margin-left-10">
-                <button class="btn btn-danger btn-icon no-margin" disabled="row.status === 2" (click)="getModalAnswer(row.id)">
+                <button class="btn btn-danger btn-icon no-margin" [disabled]="row.status === 2" (click)="getModalAnswer(row.id)">
                   <i class="icofont icofont-trash" title="Você não pode remover uma auditoria concluida"></i>
                 </button>
               </span>

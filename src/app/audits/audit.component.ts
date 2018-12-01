@@ -50,7 +50,7 @@ export class AuditComponent implements OnInit {
   units: Unit[];
   selectItems: Array<IOption> ;
   selectedEnviroment: Array<string> = [];
-
+  dateNow: string;
   //Filter and pagination
   auditFiltered: Audit[];
   lengthAuditsPagination: number;
@@ -63,7 +63,9 @@ export class AuditComponent implements OnInit {
     private _unitService: UnitService) {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
-
+    let date = new Date()
+    date.setHours(0,0,0,0);
+    this.dateNow = date.toISOString().substring(0,10);
   }
 
   ngOnInit() {
@@ -148,7 +150,9 @@ export class AuditComponent implements OnInit {
         this.enviromentsList = enviroments;
     });
    }
-
+   validadeDate(date){
+     return this.dateNow >= date;
+   }
   loadUsers() {
     this._userService.load()
       .subscribe(users => {
@@ -227,8 +231,9 @@ export class AuditComponent implements OnInit {
       await this._enviromentService.loadEnviromentsByUnit(audit.unit_id)
       .subscribe(enviroments => {
         this.enviroments = enviroments;
+        this.enviromentsList = enviroments;
         this.evaluations.forEach(x => {
-          this.enviromentsList = this.enviroments.filter(b => b.id != x.Enviroment.id);
+          this.enviromentsList = this.enviromentsList.filter(b => b.id != x.Enviroment.id);
         })
     });
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];

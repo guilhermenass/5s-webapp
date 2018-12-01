@@ -202,9 +202,11 @@ export class AuditComponent implements OnInit {
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
-        this._evaluationService.save(this.saveAudit);
-        this.load();
-        this.resetForm();
+        this._evaluationService.save(this.saveAudit)
+          .subscribe((res) => {
+            this.load();
+            this.resetForm();
+          })
       });
     }
   }

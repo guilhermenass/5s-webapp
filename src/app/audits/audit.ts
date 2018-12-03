@@ -27,7 +27,7 @@ export class Audit {
         this.description = description;
         this.status = status;
         
-        if(status == 2){
+        if(status == 1){
             this.status_name = 'Concluída';
         } else if(new Date() < new Date(due_date)) {
             this.status_name = 'Pendente';

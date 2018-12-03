@@ -124,6 +124,12 @@ export class AuditComponent implements OnInit {
     this.auditService.load()
       .subscribe(audits => {
         audits.forEach(audit => {
+            var evaluationPending = audit.Evaluations.filter(x => x.status != 2);
+            if(evaluationPending.length > 0){
+              audit.status = 0;
+            }else {
+              audit.status = 1;
+            }
             this.audits.push(new Audit(audit.title, 
                                        audit.Evaluations[0].Enviroment.Unit, 
                                        audit.Evaluations,

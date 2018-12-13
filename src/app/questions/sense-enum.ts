@@ -1,7 +1,7 @@
 export enum SenseEnum {
-    "Eliminar (Seiri)" = 1,
-    "Arrumar (Seiton)" = 2,
-    "Limpar (Seisou)" = 3,
-    "Padronizar (Seiketsu)" = 4,
-    "Manter (Shitsuke" = 5
+    "Utilização (Seiri)" = 1,
+    "Organização (Seiton)" = 2,
+    "Limpeza (Seisou)" = 3,
+    "Saúde (Seiketsu)" = 4,
+    "Disciplina (Shitsuke)" = 5
 }

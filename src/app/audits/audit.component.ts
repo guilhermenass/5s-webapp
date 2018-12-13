@@ -102,16 +102,19 @@ export class AuditComponent implements OnInit {
    * Remove a avaliação e adiciona o ambiente da avaliação excluida a lista de ambientes disponiveis
    * @param i index no array
    */
-  removeEvaluation(i: number){
-    const env = this.enviroments.find(env => env.id === this.evaluations[i].Enviroment.id);
-    this.enviromentsList.push(new Enviroment(env.id,env.block, 
-                                             env.description, 
-                                             env.name, 
-                                             env.enviroment_types_id, 
-                                             env.units_id, 
-                                             env.users_id));
-    this.enviromentsList = this.enviromentsList.filter(x => x != null);
-    this.evaluations.splice(i,1);
+  removeEvaluation(i: number, evaluation: any){
+    this._evaluationService.remove(evaluation.id)
+     .subscribe((res) => {
+      const env = this.enviroments.find(env => env.id === this.evaluations[i].Enviroment.id);
+      this.enviromentsList.push(new Enviroment(env.id,env.block, 
+                                               env.description, 
+                                               env.name, 
+                                               env.enviroment_types_id, 
+                                               env.units_id, 
+                                               env.users_id));
+      this.enviromentsList = this.enviromentsList.filter(x => x != null);
+      this.evaluations.splice(i,1);
+     })
   }
   findAudits(typed: string) {
     this.auditFiltered = this.audits.filter(

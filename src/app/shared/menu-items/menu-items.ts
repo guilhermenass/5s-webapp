@@ -40,16 +40,22 @@ const MENUITEMS = [
         icon: 'fas fa-home'
       },
       {
+        state: 'units',
+        name: 'Unidades',
+        type: 'link',
+        icon: 'far fa-building'
+      },
+      {
         state: 'users',
         name: 'Usuários',
         type: 'link',
         icon: 'fas fa-users'
       },
       {
-        state: 'audits',
-        name: 'Auditorias',
+        state: 'enviromentstype',
+        name: 'Tipos de Ambientes',
         type: 'link',
-        icon: ' far fa-check-square'
+        icon: 'fas fa-sitemap'
       },
       {
         state: 'enviroments',
@@ -64,16 +70,10 @@ const MENUITEMS = [
         icon: 'fas fa-question'
       },
       {
-        state: 'units',
-        name: 'Unidades',
+        state: 'audits',
+        name: 'Auditorias',
         type: 'link',
-        icon: 'far fa-building'
-      },
-      {
-        state: 'enviromentstype',
-        name: 'Tipo de Ambiente',
-        type: 'link',
-        icon: 'fas fa-sitemap'
+        icon: ' far fa-check-square'
       },
       {
         state: 'reports',

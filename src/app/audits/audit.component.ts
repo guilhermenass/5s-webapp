@@ -50,7 +50,7 @@ export class AuditComponent implements OnInit {
   units: Unit[];
   selectItems: Array<IOption> ;
   selectedEnviroment: Array<string> = [];
-
+  dateNow: string;
   //Filter and pagination
   auditFiltered: Audit[];
   lengthAuditsPagination: number;
@@ -63,7 +63,9 @@ export class AuditComponent implements OnInit {
     private _unitService: UnitService) {
     moment.locale('pt-BR');
     defineLocale('pt-br', ptBrLocale);
-
+    let date = new Date()
+    date.setHours(0,0,0,0);
+    this.dateNow = date.toISOString().substring(0,10);
   }
 
   ngOnInit() {
@@ -100,16 +102,19 @@ export class AuditComponent implements OnInit {
    * Remove a avaliação e adiciona o ambiente da avaliação excluida a lista de ambientes disponiveis
    * @param i index no array
    */
-  removeEvaluation(i: number){
-    const env = this.enviroments.find(env => env.id === this.evaluations[i].Enviroment.id);
-    this.enviromentsList.push(new Enviroment(env.id,env.block, 
-                                             env.description, 
-                                             env.name, 
-                                             env.enviroment_types_id, 
-                                             env.units_id, 
-                                             env.users_id));
-    this.enviromentsList = this.enviromentsList.filter(x => x != null);
-    this.evaluations.splice(i,1);
+  removeEvaluation(i: number, evaluation: any){
+    this._evaluationService.remove(evaluation.id)
+     .subscribe((res) => {
+      const env = this.enviroments.find(env => env.id === this.evaluations[i].Enviroment.id);
+      this.enviromentsList.push(new Enviroment(env.id,env.block, 
+                                               env.description, 
+                                               env.name, 
+                                               env.enviroment_types_id, 
+                                               env.units_id, 
+                                               env.users_id));
+      this.enviromentsList = this.enviromentsList.filter(x => x != null);
+      this.evaluations.splice(i,1);
+     })
   }
   findAudits(typed: string) {
     this.auditFiltered = this.audits.filter(
@@ -122,6 +127,12 @@ export class AuditComponent implements OnInit {
     this.auditService.load()
       .subscribe(audits => {
         audits.forEach(audit => {
+            var evaluationPending = audit.Evaluations.filter(x => x.status != 2);
+            if(evaluationPending.length > 0){
+              audit.status = 0;
+            }else {
+              audit.status = 1;
+            }
             this.audits.push(new Audit(audit.title, 
                                        audit.Evaluations[0].Enviroment.Unit, 
                                        audit.Evaluations,
@@ -148,7 +159,9 @@ export class AuditComponent implements OnInit {
         this.enviromentsList = enviroments;
     });
    }
-
+   validadeDate(date){
+     return this.dateNow >= date;
+   }
   loadUsers() {
     this._userService.load()
       .subscribe(users => {
@@ -202,9 +215,11 @@ export class AuditComponent implements OnInit {
           this.saveAudit.evaluations.forEach( env => {
             env.audits_id = this.saveAudit.id;
           });
-        this._evaluationService.save(this.saveAudit);
-        this.load();
-        this.resetForm();
+        this._evaluationService.save(this.saveAudit)
+          .subscribe((res) => {
+            this.load();
+            this.resetForm();
+          })
       });
     }
   }
@@ -225,8 +240,9 @@ export class AuditComponent implements OnInit {
       await this._enviromentService.loadEnviromentsByUnit(audit.unit_id)
       .subscribe(enviroments => {
         this.enviroments = enviroments;
+        this.enviromentsList = enviroments;
         this.evaluations.forEach(x => {
-          this.enviromentsList = this.enviroments.filter(b => b.id != x.Enviroment.id);
+          this.enviromentsList = this.enviromentsList.filter(b => b.id != x.Enviroment.id);
         })
     });
       this.period = [moment(audit.initial_date).toDate(), moment(audit.due_date).toDate()];
